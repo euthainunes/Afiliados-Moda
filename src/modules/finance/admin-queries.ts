@@ -75,9 +75,9 @@ export async function listPayoutsAdmin(actor: Principal, status?: string) {
     .limit(200);
 }
 
-export async function recentLedger(actor: Principal, limit = 60) {
+export async function recentLedger(actor: Principal, { page = 1, pageSize = 25 }: { page?: number; pageSize?: number } = {}) {
   assertCan(actor, "ledger.read");
-  const txs = await db.select().from(ledgerTransactions).orderBy(desc(ledgerTransactions.occurredAt)).limit(limit);
+  const txs = await db.select().from(ledgerTransactions).orderBy(desc(ledgerTransactions.occurredAt), desc(ledgerTransactions.id)).limit(pageSize + 1).offset((Math.max(1, page) - 1) * pageSize);
   const entries = txs.length ? await db.select().from(ledgerEntries).where(inArray(ledgerEntries.transactionId, txs.map((t) => t.id))) : [];
   return txs.map((t) => ({ tx: t, entries: entries.filter((e) => e.transactionId === t.id) }));
 }

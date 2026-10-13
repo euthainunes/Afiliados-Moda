@@ -42,7 +42,7 @@ export async function performanceSeries(userId: string, days = 30, now = new Dat
   return series;
 }
 
-export async function conversionsForUser(userId: string, limit = 100) {
+export async function conversionsForUser(userId: string, { page = 1, pageSize = 20 }: { page?: number; pageSize?: number } = {}) {
   return db
     .select({
       id: conversions.id,
@@ -63,11 +63,12 @@ export async function conversionsForUser(userId: string, limit = 100) {
     .innerJoin(brands, eq(brands.id, conversions.brandId))
     .where(eq(conversions.userId, userId))
     .orderBy(desc(conversions.registeredAt))
-    .limit(limit);
+    .limit(pageSize + 1)
+    .offset((Math.max(1, page) - 1) * pageSize);
 }
 
 // Extrato: cada linha é um lançamento do livro-razão que afeta o saldo da usuária, com motivo e origem.
-export async function statementForUser(userId: string, limit = 200) {
+export async function statementForUser(userId: string, { page = 1, pageSize = 20 }: { page?: number; pageSize?: number } = {}) {
   const rows = await db
     .select({
       transactionId: ledgerTransactions.id,
@@ -81,8 +82,9 @@ export async function statementForUser(userId: string, limit = 200) {
     .from(ledgerEntries)
     .innerJoin(ledgerTransactions, eq(ledgerTransactions.id, ledgerEntries.transactionId))
     .where(and(eq(ledgerEntries.userId, userId)))
-    .orderBy(desc(ledgerTransactions.occurredAt))
-    .limit(limit);
+    .orderBy(desc(ledgerTransactions.occurredAt), desc(ledgerEntries.id))
+    .limit(pageSize + 1)
+    .offset((Math.max(1, page) - 1) * pageSize);
   // Valor visto pela usuária: crédito no passivo = valor a favor dela (sinal invertido).
   return rows.map((r) => ({ ...r, amountForUser: r.amount === 0 ? 0 : -r.amount }));
 }

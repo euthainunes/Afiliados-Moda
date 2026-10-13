@@ -3,15 +3,21 @@ import { ColumnChart } from "@/components/finance/column-chart";
 import { DemoBadge, Money, StatTile } from "@/components/finance/money";
 import { ConversionStateBadge } from "@/components/finance/status";
 import { PageTitle } from "@/components/ui/card";
+import { SimplePager } from "@/components/ui/pagination";
 import { requireSession } from "@/lib/auth/current";
 import { dateFmt } from "@/lib/dates";
 import { conversionsForUser, performanceSeries } from "@/modules/finance/queries";
 
 export const metadata: Metadata = { title: "Desempenho" };
 
-export default async function PerformancePage() {
+const PAGE = 20;
+
+export default async function PerformancePage({ searchParams }: { searchParams: Promise<{ pagina?: string }> }) {
   const session = await requireSession("/app/desempenho");
-  const [series, convs] = await Promise.all([performanceSeries(session.user.id, 30), conversionsForUser(session.user.id)]);
+  const page = Math.max(1, Math.min(500, Number((await searchParams).pagina) || 1));
+  const [series, rows] = await Promise.all([performanceSeries(session.user.id, 30), conversionsForUser(session.user.id, { page, pageSize: PAGE })]);
+  const hasNext = rows.length > PAGE;
+  const convs = rows.slice(0, PAGE);
   const clicks = series.reduce((s, d) => s + d.clicks, 0);
   const sales = series.reduce((s, d) => s + d.conversions, 0);
   const reward = series.reduce((s, d) => s + d.rewardCents, 0);
@@ -68,6 +74,7 @@ export default async function PerformancePage() {
             </table>
           </div>
         )}
+        <SimplePager page={page} hasNext={hasNext} href={(p) => `/app/desempenho?pagina=${p}`} />
       </section>
     </>
   );

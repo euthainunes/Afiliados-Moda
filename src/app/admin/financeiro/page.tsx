@@ -5,6 +5,7 @@ import { ActionForm } from "@/components/ui/action-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, PageTitle } from "@/components/ui/card";
+import { SimplePager } from "@/components/ui/pagination";
 import { requirePermission, toPrincipal } from "@/lib/auth/current";
 import { db } from "@/lib/db";
 import { brands, profiles, userRoles } from "@/lib/db/schema";
@@ -31,14 +32,16 @@ const ACCOUNT: Record<string, string> = {
   adjustments: "Ajustes",
 };
 
-export default async function FinancePage({ searchParams }: { searchParams: Promise<{ origem?: string }> }) {
+export default async function FinancePage({ searchParams }: { searchParams: Promise<{ origem?: string; pagina?: string }> }) {
   const session = await requirePermission("ledger.read", "/admin/financeiro");
   const principal = toPrincipal(session);
-  const demo = (await searchParams).origem === "demonstracao";
+  const sp = await searchParams;
+  const demo = sp.origem === "demonstracao";
+  const page = Math.max(1, Math.min(1000, Number(sp.pagina) || 1));
   const [t, invoices, ledger, adjustments, brandRows, userRows] = await Promise.all([
     platformTotals(demo),
     listInvoices(principal),
-    recentLedger(principal),
+    recentLedger(principal, { page }),
     listAdjustments(principal),
     db.select({ id: brands.id, name: brands.name }).from(brands).orderBy(asc(brands.name)),
     db.select({ id: profiles.userId, name: profiles.displayName }).from(profiles).innerJoin(userRoles, eq(userRoles.userId, profiles.userId)).where(eq(userRoles.role, "user")).orderBy(asc(profiles.displayName)).limit(500),
@@ -140,7 +143,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {ledger.map(({ tx, entries }) => (
+              {ledger.slice(0, 25).map(({ tx, entries }) => (
                 <tr key={tx.id} className="align-top">
                   <td className="whitespace-nowrap px-3 py-3 tabular-nums">{dateTimeFmt.format(tx.occurredAt)}</td>
                   <td className="px-3 py-3">
@@ -162,6 +165,7 @@ export default async function FinancePage({ searchParams }: { searchParams: Prom
             </tbody>
           </table>
         </div>
+        <SimplePager page={page} hasNext={ledger.length > 25} href={(p) => `/admin/financeiro?${demo ? "origem=demonstracao&" : ""}pagina=${p}#razao`} />
       </section>
     </div>
   );

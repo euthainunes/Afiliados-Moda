@@ -46,3 +46,33 @@ test("capturas", async ({ page }, info) => {
   const { writeFile } = await import("node:fs/promises");
   await writeFile(`${dir}/og-image.png`, await img.body());
 });
+
+test("capturas da demonstração financeira", async ({ page }, info) => {
+  const dir = `test-results/telas/${info.project.name}`;
+  const login = async (email: string) => {
+    await page.goto("/entrar");
+    await page.getByLabel("E-mail", { exact: true }).first().fill(email);
+    await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
+    await page.getByRole("button", { name: "Entrar" }).click();
+    await page.waitForURL(/\/(app|admin)$/);
+  };
+  await login("criadora2@exemplo.test");
+  await page.screenshot({ path: `${dir}/criadora-inicio.png`, fullPage: true });
+  await page.goto("/app/desempenho");
+  await page.screenshot({ path: `${dir}/criadora-desempenho.png`, fullPage: true });
+  await page.goto("/app/recompensas");
+  await page.screenshot({ path: `${dir}/criadora-recompensas.png`, fullPage: true });
+  await page.context().clearCookies();
+  await login("admin@exemplo.test");
+  for (const [name, path] of [
+    ["admin-visao-geral", "/admin"],
+    ["admin-financeiro", "/admin/financeiro?origem=demonstracao"],
+    ["admin-resgates", "/admin/resgates"],
+    ["admin-vendas", "/admin/vendas"],
+    ["admin-integracoes", "/admin/integracoes"],
+    ["admin-saude", "/admin/saude"],
+  ] as const) {
+    await page.goto(path);
+    await page.screenshot({ path: `${dir}/${name}.png`, fullPage: true });
+  }
+});

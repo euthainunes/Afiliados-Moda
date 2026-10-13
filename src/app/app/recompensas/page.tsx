@@ -6,6 +6,7 @@ import { ActionForm } from "@/components/ui/action-form";
 import { Alert } from "@/components/ui/alert";
 import { ButtonLink } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/card";
+import { SimplePager } from "@/components/ui/pagination";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { requireSession } from "@/lib/auth/current";
 import { dateFmt, dateTimeFmt } from "@/lib/dates";
@@ -22,9 +23,14 @@ const ACCOUNT_LABEL: Record<string, string> = {
   user_reward_in_payout: "Em resgate",
 };
 
-export default async function RewardsPage() {
+const PAGE = 20;
+
+export default async function RewardsPage({ searchParams }: { searchParams: Promise<{ pagina?: string }> }) {
   const session = await requireSession("/app/recompensas");
-  const [b, statement, payouts, min] = await Promise.all([userBalances(session.user.id), statementForUser(session.user.id), payoutsForUser(session.user.id), getSetting("payout.min_cents")]);
+  const page = Math.max(1, Math.min(500, Number((await searchParams).pagina) || 1));
+  const [b, rows, payouts, min] = await Promise.all([userBalances(session.user.id), statementForUser(session.user.id, { page, pageSize: PAGE }), payoutsForUser(session.user.id), getSetting("payout.min_cents")]);
+  const hasNext = rows.length > PAGE;
+  const statement = rows.slice(0, PAGE);
   const anyDemo = statement.some((s) => s.isDemo) || payouts.some((p) => p.isDemo);
   const open = payouts.find((p) => p.status === "requested" || p.status === "approved");
 
@@ -79,29 +85,21 @@ export default async function RewardsPage() {
         {statement.length === 0 ? (
           <p className="mt-3 text-sm text-muted">Sem lançamentos ainda.</p>
         ) : (
-          <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
-            <table className="w-full min-w-[640px] text-left text-sm">
-              <thead className="border-b border-line text-muted">
-                <tr>
-                  <th scope="col" className="px-4 py-3 font-medium">Data</th>
-                  <th scope="col" className="px-4 py-3 font-medium">Descrição</th>
-                  <th scope="col" className="px-4 py-3 font-medium">Saldo</th>
-                  <th scope="col" className="px-4 py-3 text-right font-medium">Valor</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line">
-                {statement.map((s, i) => (
-                  <tr key={`${s.transactionId}-${i}`}>
-                    <td className="px-4 py-3 tabular-nums">{dateFmt.format(s.occurredAt)}</td>
-                    <td className="px-4 py-3">{s.reason} {s.isDemo && <DemoBadge />}</td>
-                    <td className="px-4 py-3 text-muted">{ACCOUNT_LABEL[s.account] ?? s.account}</td>
-                    <td className="px-4 py-3 text-right"><Money cents={s.amountForUser} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ul className="mt-3 divide-y divide-line rounded-xl border border-line bg-surface text-sm">
+            {statement.map((s, i) => (
+              <li key={`${s.transactionId}-${i}`} className="flex items-start justify-between gap-4 px-4 py-3">
+                <div className="min-w-0">
+                  <p>{s.reason} {s.isDemo && <DemoBadge />}</p>
+                  <p className="mt-0.5 text-xs text-muted">
+                    {dateFmt.format(s.occurredAt)} · {ACCOUNT_LABEL[s.account] ?? s.account}
+                  </p>
+                </div>
+                <Money cents={s.amountForUser} className="shrink-0 font-medium" />
+              </li>
+            ))}
+          </ul>
         )}
+        <SimplePager page={page} hasNext={hasNext} href={(p) => `/app/recompensas?pagina=${p}#extrato`} />
         <p className="mt-3 text-xs text-muted">
           Regras de liberação no <Link href="/regulamento" className="underline">regulamento</Link>.
         </p>
