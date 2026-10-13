@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { clearSessionCookie, getSession, readSessionToken, requestContext, safeNext, setSessionCookie } from "@/lib/auth/current";
+import { clearSessionCookie, getPendingMfaSession, getSession, readSessionToken, requestContext, safeNext, setSessionCookie } from "@/lib/auth/current";
 import type { FormState } from "@/lib/form-state";
 import {
   login,
@@ -11,6 +11,7 @@ import {
   signUp,
   verifyEmail,
 } from "@/modules/identity/service";
+import { verifyChallenge } from "@/modules/identity/mfa";
 import { revokeSessionByToken } from "@/modules/identity/sessions";
 import {
   emailOnlySchema,
@@ -54,7 +55,29 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
   }
 
   await setSessionCookie(result.token, result.expiresAt);
+  if (result.mfaRequired) {
+    const next = typeof raw.next === "string" && raw.next ? `?next=${encodeURIComponent(safeNext(raw.next))}` : "";
+    redirect(`/entrar/verificacao${next}`);
+  }
   redirect(safeNext(raw.next, result.staff ? "/admin" : "/app"));
+}
+
+export async function mfaChallengeAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const pending = await getPendingMfaSession();
+  const token = await readSessionToken();
+  if (!pending || !token) redirect("/entrar");
+  const code = String(formData.get("code") ?? "").slice(0, 40);
+  if (!code.trim()) return { status: "error", fieldErrors: { code: ["Digite o código."] } };
+  const ctx = await requestContext();
+  const result = await verifyChallenge(pending.user.id, pending.sessionId, code, ctx.ipHash);
+  if (!result.ok) {
+    return result.error === "rate_limited"
+      ? { status: "error", message: TOO_MANY }
+      : { status: "error", fieldErrors: { code: ["Código incorreto ou expirado. Use o código que aparece agora no app."] } };
+  }
+  await setSessionCookie(token, result.expiresAt);
+  const fallback = result.staff ? "/admin" : "/app";
+  redirect(result.usedRecoveryCode ? `/app/configuracoes/seguranca?aviso=codigo-usado` : safeNext(formData.get("next"), fallback));
 }
 
 export async function resendVerificationAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -97,6 +120,7 @@ export async function logoutAction(): Promise<void> {
 export async function redirectIfAuthenticated(next?: string) {
   const session = await getSession();
   if (session) redirect(safeNext(next, "/app"));
+  if (await getPendingMfaSession()) redirect(`/entrar/verificacao${next ? `?next=${encodeURIComponent(next)}` : ""}`);
 }
 
 export async function verifyEmailAction(_prev: FormState, formData: FormData): Promise<FormState> {

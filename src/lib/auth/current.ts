@@ -35,20 +35,38 @@ export const getSession = cache(async (): Promise<AuthenticatedSession | null> =
   return token ? validateSessionToken(token) : null;
 });
 
+// Sessão que acertou a senha mas ainda não confirmou o segundo fator (usada só pela tela de verificação).
+export async function getPendingMfaSession(): Promise<AuthenticatedSession | null> {
+  const token = await readSessionToken();
+  if (!token) return null;
+  const session = await validateSessionToken(token, { allowPending: true });
+  return session?.mfa.pending ? session : null;
+}
+
+export const MFA_SETUP_PATH = "/app/configuracoes/seguranca";
+
 export function toPrincipal(session: AuthenticatedSession): Principal {
   return { id: session.user.id, roles: session.roles };
 }
 
 export async function requireSession(next?: string): Promise<AuthenticatedSession> {
   const session = await getSession();
-  if (!session) redirect(next ? `/entrar?next=${encodeURIComponent(next)}` : "/entrar");
+  if (!session) {
+    const query = next ? `?next=${encodeURIComponent(next)}` : "";
+    if (await getPendingMfaSession()) redirect(`/entrar/verificacao${query}`);
+    redirect(`/entrar${query}`);
+  }
   return session;
 }
 
 // Áreas internas respondem 404 a quem não tem permissão, para não revelar sua existência.
 export async function requirePermission(permission: Permission, next?: string): Promise<AuthenticatedSession> {
   const session = await requireSession(next);
-  if (!can(toPrincipal(session), permission)) notFound();
+  if (!can(toPrincipal(session), permission)) {
+    // Conta da equipe sem segundo fator onde ele é obrigatório: leva ao cadastro em vez de esconder a área.
+    if (session.mfa.enrollmentRequired) redirect(`${MFA_SETUP_PATH}?obrigatorio=1`);
+    notFound();
+  }
   return session;
 }
 

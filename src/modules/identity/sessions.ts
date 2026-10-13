@@ -1,9 +1,10 @@
 import { and, eq, gt, isNull, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { profiles, sessions, userRoles, users } from "@/lib/db/schema";
+import { profiles, sessions, userMfa, userRoles, users } from "@/lib/db/schema";
 import { randomToken, sha256 } from "@/lib/crypto";
+import { staffMfaRequired } from "@/lib/env";
 import { isStaff } from "@/modules/access/can";
-import type { Role } from "@/modules/access/permissions";
+import { STAFF_ROLES, type Role } from "@/modules/access/permissions";
 import { SESSION_POLICY } from "./policies";
 
 export type SessionContext = { ipHash?: string | null; userAgent?: string | null };
@@ -12,7 +13,15 @@ export type AuthenticatedSession = {
   sessionId: string;
   expiresAt: Date;
   user: { id: string; email: string; displayName: string; username: string; emailVerified: boolean };
+  // Papéis efetivos desta sessão. Papéis de equipe ficam suspensos enquanto o segundo fator exigido não for cadastrado.
   roles: Role[];
+  mfa: {
+    enabled: boolean;
+    // Segundo fator ainda não confirmado nesta sessão (só existe com allowPending).
+    pending: boolean;
+    // Conta da equipe sem segundo fator, num ambiente em que ele é obrigatório.
+    enrollmentRequired: boolean;
+  };
 };
 
 async function rolesOf(userId: string): Promise<Role[]> {
@@ -20,12 +29,13 @@ async function rolesOf(userId: string): Promise<Role[]> {
   return rows.map((r) => r.role);
 }
 
-export async function createSession(userId: string, ctx: SessionContext = {}) {
+export async function createSession(userId: string, ctx: SessionContext = {}, { pendingMfa = false } = {}) {
   const roles = await rolesOf(userId);
   const policy = isStaff(roles) ? SESSION_POLICY.staff : SESSION_POLICY.user;
   const token = randomToken();
   const now = Date.now();
-  const expiresAt = new Date(now + policy.idleMs);
+  // Enquanto o segundo fator não é confirmado, a sessão vale só alguns minutos.
+  const expiresAt = new Date(now + (pendingMfa ? SESSION_POLICY.pendingMfaMs : policy.idleMs));
   await db.insert(sessions).values({
     id: sha256(token),
     userId,
@@ -37,26 +47,41 @@ export async function createSession(userId: string, ctx: SessionContext = {}) {
   return { token, expiresAt };
 }
 
-// Valida o token do cookie. Retorna null para sessão inexistente, revogada, expirada ou conta inativa.
-export async function validateSessionToken(token: string): Promise<AuthenticatedSession | null> {
+// Chamado após a confirmação do segundo fator: devolve à sessão a duração normal.
+export async function sessionPolicyExpiry(userId: string, absoluteExpiresAt: Date): Promise<Date> {
+  const policy = isStaff(await rolesOf(userId)) ? SESSION_POLICY.staff : SESSION_POLICY.user;
+  return new Date(Math.min(Date.now() + policy.idleMs, absoluteExpiresAt.getTime()));
+}
+
+// Valida o token do cookie. Retorna null para sessão inexistente, revogada, expirada, conta inativa
+// ou — salvo com allowPending — sessão cujo segundo fator ainda não foi confirmado.
+export async function validateSessionToken(token: string, { allowPending = false } = {}): Promise<AuthenticatedSession | null> {
   if (!token || token.length > 200) return null;
   const id = sha256(token);
   const now = new Date();
   const [row] = await db
-    .select({ session: sessions, user: users, profile: profiles })
+    .select({ session: sessions, user: users, profile: profiles, mfaEnabledAt: userMfa.enabledAt })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
     .innerJoin(profiles, eq(profiles.userId, users.id))
+    .leftJoin(userMfa, eq(userMfa.userId, users.id))
     .where(and(eq(sessions.id, id), isNull(sessions.revokedAt), gt(sessions.expiresAt, now)))
     .limit(1);
   if (!row || row.user.status !== "active") return null;
 
-  const roles = await rolesOf(row.user.id);
+  const mfaEnabled = !!row.mfaEnabledAt;
+  const mfaVerified = !!row.session.mfaVerifiedAt;
+  const pending = mfaEnabled && !mfaVerified;
+  if (pending && !allowPending) return null;
+
+  const assignedRoles = await rolesOf(row.user.id);
+  const enrollmentRequired = !mfaEnabled && isStaff(assignedRoles) && staffMfaRequired();
+  const roles = pending || enrollmentRequired ? assignedRoles.filter((r) => !STAFF_ROLES.includes(r)) : assignedRoles;
   let expiresAt = row.session.expiresAt;
 
   // Expiração deslizante por inatividade, limitada pela expiração absoluta.
   if (now.getTime() - row.session.lastSeenAt.getTime() > SESSION_POLICY.touchIntervalMs) {
-    const policy = isStaff(roles) ? SESSION_POLICY.staff : SESSION_POLICY.user;
+    const policy = isStaff(assignedRoles) ? SESSION_POLICY.staff : SESSION_POLICY.user;
     expiresAt = new Date(Math.min(now.getTime() + policy.idleMs, row.session.absoluteExpiresAt.getTime()));
     await db.update(sessions).set({ lastSeenAt: now, expiresAt }).where(eq(sessions.id, id));
   }
@@ -72,6 +97,7 @@ export async function validateSessionToken(token: string): Promise<Authenticated
       emailVerified: !!row.user.emailVerifiedAt,
     },
     roles,
+    mfa: { enabled: mfaEnabled, pending, enrollmentRequired },
   };
 }
 

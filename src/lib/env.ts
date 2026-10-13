@@ -11,6 +11,9 @@ const schema = z.object({
   RESEND_API_KEY: z.string().optional(),
   // Chave de 32 bytes (base64) para criptografar dados pessoais sensíveis (CPF, chave PIX).
   PII_ENCRYPTION_KEY: z.string().optional(),
+  // Verificação em duas etapas obrigatória para a equipe (operadoras e administradoras).
+  // Em produção é sempre obrigatória; fora dela, vale o que estiver configurado (padrão: não obrigatória).
+  REQUIRE_STAFF_MFA: z.enum(["true", "false"]).optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 
@@ -25,6 +28,7 @@ export function env(): Env {
     if (parsed.APP_ENV === "production") {
       if (parsed.MAIL_DRIVER !== "resend") throw new Error("Em produção, configure um provedor de e-mail real (MAIL_DRIVER).");
       if (!parsed.PII_ENCRYPTION_KEY) throw new Error("Em produção, PII_ENCRYPTION_KEY é obrigatória.");
+      if (parsed.REQUIRE_STAFF_MFA === "false") throw new Error("Em produção, a verificação em duas etapas da equipe não pode ser desligada.");
     }
     cached = parsed;
   }
@@ -38,6 +42,11 @@ export function resetEnvCache() {
 
 export function isProduction(): boolean {
   return env().APP_ENV === "production";
+}
+
+export function staffMfaRequired(): boolean {
+  const e = env();
+  return e.APP_ENV === "production" || e.REQUIRE_STAFF_MFA === "true";
 }
 
 export class DemoNotAllowedError extends Error {

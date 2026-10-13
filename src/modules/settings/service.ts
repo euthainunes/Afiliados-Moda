@@ -25,6 +25,12 @@ export const SETTINGS = {
     schema: z.coerce.number().int().min(7).max(365),
     default: 60,
   },
+  "privacy.contact_retention_days": {
+    label: "Anonimizar nome e e-mail de contatos públicos encerrados após (dias)",
+    help: "Retenção curta (docs/03). Proposta: 180 dias — confirmar na política de retenção com o jurídico.",
+    schema: z.coerce.number().int().min(30).max(1825),
+    default: 180,
+  },
 } as const;
 
 export type SettingKey = keyof typeof SETTINGS;

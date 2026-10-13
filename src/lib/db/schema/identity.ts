@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  bigint,
   customType,
   integer,
   index,
@@ -62,9 +63,11 @@ export const sessions = pgTable(
     ipHash: text("ip_hash"),
     userAgent: text("user_agent"),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    // Momento em que o segundo fator foi confirmado nesta sessão (null = ainda não confirmado).
+    mfaVerifiedAt: timestamp("mfa_verified_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("sessions_user_idx").on(t.userId)],
+  (t) => [index("sessions_user_idx").on(t.userId), index("sessions_expires_idx").on(t.expiresAt)],
 );
 
 export const authTokenType = pgEnum("auth_token_type", ["email_verification", "password_reset"]);
@@ -107,3 +110,30 @@ export const rateLimitBuckets = pgTable("rate_limit_buckets", {
   count: integer("count").notNull().default(0),
   windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
 });
+
+// Segundo fator (TOTP, RFC 6238). O segredo fica criptografado (AES-256-GCM); enabledAt null = cadastro em andamento.
+export const userMfa = pgTable("user_mfa", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  secretEnc: text("secret_enc").notNull(),
+  enabledAt: timestamp("enabled_at", { withTimezone: true }),
+  // Último intervalo de 30 s aceito: impede reutilizar o mesmo código (replay).
+  lastUsedStep: bigint("last_used_step", { mode: "number" }).notNull().default(0),
+  ...timestamps,
+});
+
+// Códigos de recuperação: guardados apenas como HMAC; cada um vale uma vez.
+export const mfaRecoveryCodes = pgTable(
+  "mfa_recovery_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    codeHash: text("code_hash").notNull().unique(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("mfa_recovery_codes_user_idx").on(t.userId)],
+);

@@ -7,6 +7,7 @@ import { sendMail } from "@/lib/mailer";
 import { recordAudit } from "@/modules/audit/service";
 import { isStaff } from "@/modules/access/can";
 import { getDummyHash, hashPassword, verifyPassword } from "./password";
+import { isMfaEnabled } from "./mfa";
 import { LEGAL_VERSIONS, RATE_LIMITS, TOKEN_TTL } from "./policies";
 import { consumeRateLimit, resetRateLimit } from "./rate-limit";
 import { createSession, revokeAllSessions, type SessionContext } from "./sessions";
@@ -154,7 +155,7 @@ export async function resendVerification(email: string, ctx: RequestContext = {}
 }
 
 export type LoginResult =
-  | { ok: true; token: string; expiresAt: Date; staff: boolean }
+  | { ok: true; token: string; expiresAt: Date; staff: boolean; mfaRequired: boolean }
   | { ok: false; error: "invalid" | "rate_limited" | "unverified" | "suspended"; retryAfterSec?: number };
 
 export async function login(email: string, password: string, ctx: RequestContext = {}): Promise<LoginResult> {
@@ -176,17 +177,19 @@ export async function login(email: string, password: string, ctx: RequestContext
   if (!user.emailVerifiedAt) return { ok: false, error: "unverified" };
 
   await resetRateLimit(emailKey);
-  const { token, expiresAt } = await createSession(user.id, ctx);
+  // Com segundo fator ativo, a sessão nasce pendente e só vale depois do código do app (mfa.ts).
+  const mfaRequired = await isMfaEnabled(user.id);
+  const { token, expiresAt } = await createSession(user.id, ctx, { pendingMfa: mfaRequired });
   await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
 
   const roles = (await db.select({ role: userRoles.role }).from(userRoles).where(eq(userRoles.userId, user.id))).map(
     (r) => r.role,
   );
   const staff = isStaff(roles);
-  if (staff) {
+  if (staff && !mfaRequired) {
     await recordAudit({ actorId: user.id, actorRoles: roles, action: "staff.login", entityType: "session", ipHash: ctx.ipHash });
   }
-  return { ok: true, token, expiresAt, staff };
+  return { ok: true, token, expiresAt, staff, mfaRequired };
 }
 
 // Resposta sempre genérica: não informa se o e-mail tem conta.

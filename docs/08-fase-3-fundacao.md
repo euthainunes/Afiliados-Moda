@@ -33,12 +33,12 @@ Resultado local: **33 testes unitários/integração** e **18 testes E2E** (9 ce
 | Nome "Afiliados Moda" e paleta como **provisórios** | Dependem da D16 | Sim, centralizados em `src/config/site.ts` e `globals.css` |
 
 ## Pendências (Fase 3b, antes de qualquer uso em produção)
-- **MFA (TOTP) obrigatório para operadoras e administradoras.**
-- Provedor de e-mail transacional (hoje: impressão no terminal em desenvolvimento; produção recusa enviar sem provedor).
-- Login com Google.
+- ~~MFA (TOTP) obrigatório para operadoras e administradoras~~ — feito na etapa G (doc 11).
+- ~~Provedor de e-mail transacional~~ — adaptador Resend pronto (doc 12 §3); falta a conta real.
+- Login com Google — **pendente** (depende de credenciais OAuth do Google; ver doc 14).
 - Edição de perfil, exportação de dados e exclusão/anonimização de conta (LGPD).
 - Gestão de equipe pela interface (hoje: papéis atribuídos por script/banco).
-- Content Security Policy com nonce.
+- ~~Content Security Policy com nonce~~ — feito na etapa G (`src/proxy.ts`).
 - Textos legais definitivos (páginas atuais são rascunhos sinalizados).
 
 ## Como rodar localmente

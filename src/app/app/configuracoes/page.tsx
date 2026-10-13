@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Button, buttonClasses } from "@/components/ui/button";
 import { Card, PageTitle } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/current";
 import { listActiveSessions } from "@/modules/identity/sessions";
@@ -51,6 +52,16 @@ export default async function SettingsPage() {
         <Card aria-labelledby="senha">
           <h2 id="senha" className="mb-4 text-lg font-semibold">Alterar senha</h2>
           <ChangePasswordForm />
+        </Card>
+
+        <Card aria-labelledby="seguranca">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 id="seguranca" className="text-lg font-semibold">Verificação em duas etapas</h2>
+              <p className="mt-1 text-sm text-muted">{session.mfa.enabled ? "Ativa: um código do celular é pedido a cada login." : "Desativada. Recomendamos ativar."}</p>
+            </div>
+            <Link href="/app/configuracoes/seguranca" className={buttonClasses("secondary", "sm")}>{session.mfa.enabled ? "Gerenciar" : "Ativar"}</Link>
+          </div>
         </Card>
 
         <Card aria-labelledby="sessoes">

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Alert } from "@/components/ui/alert";
 import { AppShell, type NavItem } from "@/components/app-shell";
 import { requireSession, toPrincipal } from "@/lib/auth/current";
 import { can } from "@/modules/access/can";
@@ -27,6 +29,13 @@ export default async function UserAreaLayout({ children }: { children: React.Rea
   if (can(toPrincipal(session), "admin.access")) nav.push({ href: "/admin", label: "Painel interno" });
   return (
     <AppShell nav={nav} mobileNav={mobileNav} userName={session.user.displayName} notifications={{ href: "/app/notificacoes", unread }}>
+      {session.mfa.enrollmentRequired && (
+        <div className="mb-6">
+          <Alert tone="warning" title="Painel interno bloqueado">
+            Sua conta é da equipe: <Link href="/app/configuracoes/seguranca" className="font-medium underline">ative a verificação em duas etapas</Link> para acessar o painel.
+          </Alert>
+        </div>
+      )}
       {children}
     </AppShell>
   );

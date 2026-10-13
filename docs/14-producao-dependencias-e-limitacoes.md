@@ -45,15 +45,17 @@ Marque cada item com evidência (print, log, ata). **Não operar com dinheiro re
 - [ ] `ALTER DATABASE <banco> SET app.environment = 'production';` (bloqueio de dados de demonstração no banco).
 - [ ] Usuário de banco da aplicação sem privilégio de superusuário.
 - [ ] `pnpm db:migrate` aplicado pelo pipeline; **nunca** `db:seed` nem `db:reset`.
-- [ ] Variáveis no cofre da hospedagem: `DATABASE_URL`, `AUTH_SECRET` (≥ 48 bytes aleatórios), `APP_URL` (https), `APP_ENV=production`, `MAIL_DRIVER=resend`, `MAIL_FROM`, `RESEND_API_KEY`, `PII_ENCRYPTION_KEY` (32 bytes base64), `CRON_SECRET` (≥ 32), `IMAGE_REMOTE_HOSTS`, credenciais VTEX.
-- [ ] Agendador configurado para `/api/cron/importar-feeds` (6/6 h), `/api/cron/sincronizar-pedidos` (1/1 h), `/api/cron/rotinas-financeiras` (diária) com `Authorization: Bearer CRON_SECRET` (`vercel.json` já define os horários na Vercel).
+- [ ] Variáveis no cofre da hospedagem: `DATABASE_URL`, `AUTH_SECRET` (≥ 48 bytes aleatórios), `APP_URL` (https), `APP_ENV=production`, `MAIL_DRIVER=resend`, `MAIL_FROM`, `RESEND_API_KEY`, `PII_ENCRYPTION_KEY` (32 bytes base64, **guardar cópia segura**: sem ela os CPFs, chaves PIX e segredos de duas etapas ficam ilegíveis), `CRON_SECRET` (≥ 32), `IMAGE_REMOTE_HOSTS`, credenciais VTEX. `REQUIRE_STAFF_MFA` pode ficar vazia (em produção é sempre obrigatória).
+- [ ] Agendador configurado para `/api/cron/importar-feeds` (6/6 h), `/api/cron/sincronizar-pedidos` (1/1 h), `/api/cron/rotinas-financeiras` (diária), `/api/cron/limpeza` (diária) com `Authorization: Bearer CRON_SECRET` (`vercel.json` já define os horários na Vercel).
 - [ ] Domínio com HTTPS; `APP_URL` correto (links de e-mail e de compartilhamento).
 - [ ] Monitoramento de erros (ex.: Sentry) e alerta de disponibilidade para `/` e `/r/*`.
 - [ ] Página **Saúde do sistema** sem itens em "Atenção".
 
 ### Segurança
-- [ ] **MFA obrigatório para administradoras e operadoras** (pendente — Fase 3b).
-- [ ] Content Security Policy com nonce (pendente).
+- [x] MFA obrigatório para administradoras e operadoras (implementado).
+- [ ] Cada pessoa da equipe ativou a verificação e guardou os códigos de recuperação (Saúde do sistema sem pendência).
+- [x] Content Security Policy com nonce (implementado).
+- [ ] Conferir no navegador do domínio final que nenhum recurso é bloqueado (console sem erros de CSP) e que `IMAGE_REMOTE_HOSTS` cobre a CDN das imagens.
 - [ ] Revisão de segurança (OWASP ASVS nível 1) e varredura de dependências.
 - [ ] Primeira administradora criada por procedimento controlado (não pelo seed); segunda administradora para quatro olhos.
 - [ ] Rotação documentada de `AUTH_SECRET`, `CRON_SECRET`, credenciais VTEX e chave de e-mail.
@@ -64,7 +66,7 @@ Marque cada item com evidência (print, log, ata). **Não operar com dinheiro re
 - [ ] Contrato com a Suntime: base de cálculo, 25%, prazos, cancelamentos, devoluções, cobrança (D1, D2, D4, D5).
 - [ ] Regra de comissão cadastrada e **aprovada por segunda administradora** com referência do contrato.
 - [ ] Parecer tributário sobre a natureza da recompensa e retenções (D10); processo de pagamento PIX aprovado (D9).
-- [ ] Política de retenção de dados aprovada; job de limpeza de sessões/contatos implementado.
+- [ ] Política de retenção de dados aprovada (rotina de limpeza implementada; ajustar `privacy.contact_retention_days` ao prazo aprovado).
 
 ### Integração VTEX (critérios do adendo §7)
 - [ ] Auditoria técnica concluída; credenciais com privilégio mínimo.
@@ -86,26 +88,28 @@ Marque cada item com evidência (print, log, ata). **Não operar com dinheiro re
 | 8 | Nome, domínio e identidade visual (D16) | Sócias | Lançamento público |
 | 9 | Textos legais definitivos e encarregada(o) LGPD | Jurídico | Lançamento |
 | 10 | Ferramenta de monitoramento de erros | Equipe | Operação |
-| 11 | Decisões D6 (atribuição por pedido × por item), D8 (autocompra — hoje recusada), D12 (mínimo de resgate — hoje R$ 20) | Sócias | Ajustes de regra (já configuráveis) |
+| 11 | Login com Google: projeto no Google Cloud, tela de consentimento OAuth verificada, Client ID/Secret | Equipe | Login social (opcional para lançar) |
+| 12 | Decisões D6 (atribuição por pedido × por item), D8 (autocompra — hoje recusada), D12 (mínimo de resgate — hoje R$ 20) | Sócias | Ajustes de regra (já configuráveis) |
 
 ## 4. Limitações conhecidas
 - **Atribuição real não comprovada.** O adaptador VTEX foi testado só com dados de exemplo baseados na documentação.
 - **Notificações de pedidos (hook/feed VTEX) não implementadas**; a sincronização é por consulta periódica.
 - **Devoluções na VTEX não mapeadas** (dependem de validação com pedidos reais).
 - **Base de cálculo por pedido inteiro** (todos os itens da marca no pedido atribuído); atribuição apenas dos itens do look depende da decisão D6.
-- **MFA, CSP com nonce e login com Google** ainda não implementados.
-- **E-mail real** implementado (Resend) mas não testado contra conta real.
+- **Login com Google** não implementado (depende de credenciais OAuth; e-mail + senha + duas etapas funcionam).
+- **E-mail real** implementado (Resend) e testado contra API simulada; falta testar com a conta e o domínio reais.
+- **Verificação em duas etapas** só por app autenticador (sem SMS, por segurança); chaves de acesso (passkeys/WebAuthn) ficam para depois.
+- **CSP** permite estilos inline (`style-src 'unsafe-inline'`); scripts exigem nonce.
 - **Pagamentos** são registrados manualmente (PIX fora da plataforma); não há PSP integrado.
 - **Pagamentos parciais da marca** não são aceitos: viram divergência para tratar com a marca.
-- **Cache:** páginas públicas são renderizadas a cada acesso (simples e correto; otimizar com volume).
+- **Cache:** todas as páginas são renderizadas a cada acesso — exigência da CSP com nonce. Com volume, avaliar CDN/cache de dados (consultas) em vez de páginas estáticas.
 - **Imagens fictícias** são SVG locais; imagens reais exigem configuração de host.
-- **Job de limpeza** (sessões expiradas, limites, contatos antigos) ainda não implementado.
 
 ## 5. Testes realizados (estado atual)
 | Tipo | Quantidade | O que cobre |
 |---|---|---|
-| Unitários | 5 arquivos | permissões, validações, preços, feed, rastreamento, cálculo financeiro, arredondamento, VTEX (mapeamento), tentativas, CPF |
-| Integração (Postgres real) | 7 arquivos | autenticação, sessões, acesso, catálogo, looks e cliques, operação, ciclo financeiro completo (atribuição → aprovação → devolução/cancelamento → elegibilidade → fatura → resgate → estorno), integridade do livro-razão no banco, bloqueios de produção, sincronização idempotente, LGPD, suporte, configurações, saúde |
-| Ponta a ponta (Playwright) | 24 cenários × 2 dispositivos (48 execuções) | cadastro/login, permissões por papel, catálogo → look → publicação → clique rastreado, operação do painel, demonstração completa (desempenho, recompensas, aprovação de resgate, integrações, conciliação, saúde), suporte, privacidade, contato |
+| Unitários | 7 arquivos | permissões, validações, preços, feed, rastreamento, cálculo financeiro, arredondamento, VTEX (mapeamento), tentativas, CPF, TOTP (vetores da RFC 6238), CSP, contrato do e-mail real |
+| Integração (Postgres real) | 8 arquivos | autenticação, verificação em duas etapas (pendência, anti-replay, recuperação, limite, obrigatoriedade da equipe, redefinição), rotina de limpeza, sessões, acesso, catálogo, looks e cliques, operação, ciclo financeiro completo (atribuição → aprovação → devolução/cancelamento → elegibilidade → fatura → resgate → estorno), integridade do livro-razão no banco, bloqueios de produção, sincronização idempotente, LGPD, suporte, configurações, saúde |
+| Ponta a ponta (Playwright) | 26 cenários × 2 dispositivos (52 execuções) | cadastro/login, ativação e desafio da verificação em duas etapas, CSP sem bloqueios, permissões por papel, catálogo → look → publicação → clique rastreado, operação do painel, demonstração completa (desempenho, recompensas, aprovação de resgate, integrações, conciliação, saúde), suporte, privacidade, contato |
 
-Total: 119 testes unitários/integração e 48 execuções ponta a ponta, todos passando localmente. Mutações propositais (retirar checagem de dono, de aprovador diferente, de idempotência, de status da conta) foram detectadas pelos testes. Comandos: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e`.
+Total: 142 testes unitários/integração e 52 execuções ponta a ponta, todos passando localmente. Mutações propositais (retirar checagem de dono, de aprovador diferente, de idempotência, de status da conta) foram detectadas pelos testes. Comandos: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e`.

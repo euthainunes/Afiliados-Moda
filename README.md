@@ -15,6 +15,8 @@ pnpm dev                        # http://localhost:3000 (links de e-mail aparece
 ```
 Contas fictícias (senha = `SEED_PASSWORD`): `admin@exemplo.test` e `admin2@exemplo.test` (administradoras), `operadora@exemplo.test`, `criadora1@exemplo.test` … `criadora5@exemplo.test`.
 
+Verificação em duas etapas: qualquer conta pode ativar em **Conta → Verificação em duas etapas**. Para a equipe ela é obrigatória quando `REQUIRE_STAFF_MFA=true` e **sempre** em produção; em desenvolvimento o padrão é não exigir, para facilitar a demonstração.
+
 Qualidade: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e` (os testes usam um banco cujo nome termina em `_test`).
 
 ## O que existe

@@ -113,6 +113,13 @@ paths:
       responses:
         "200": { description: "Resumo {eligibility, reconciliation}" }
         "401": { description: Não autorizado }
+  /api/cron/limpeza:
+    get:
+      summary: Rotina diária de retenção (sessões, links de e-mail, limites de tentativa, contatos antigos)
+      security: [{ cron: [] }]
+      responses:
+        "200": { description: "Contagens {sessions, authTokens, rateLimitBuckets, mfaEnrollments, contactsAnonymized}" }
+        "401": { description: Não autorizado }
   /admin/relatorios/exportar:
     get:
       summary: Exporta o relatório de cliques em CSV (auditado)

@@ -14,7 +14,7 @@ As fases do novo pedido foram mapeadas para o trabalho já entregue:
 | 3 — Interface | **Parcial**: público, cadastro/login/recuperação, catálogo, montador, looks públicos, painel (usuárias, marcas, campanhas, regras, catálogo, looks, relatórios, equipe, auditoria). **Falta**: desempenho e financeiro da usuária, meus links, notificações, suporte, perfil editável e privacidade (LGPD), telas financeiras e de integrações do painel | docs 09–10 |
 | 4 — Regras de negócio | **Parcial**: catálogo, looks, cliques, regras de comissão. **Falta**: pedidos, atribuição, conversões, livro-razão, elegibilidade, resgates, conciliação, notificações | doc 05 (especificação) |
 | 5 — Dados de demonstração | **Parcial**: catálogo, marca, looks e cliques fictícios. **Falta**: pedidos, conversões (aprovadas, pendentes, rejeitadas), comissões, extratos e resgates fictícios coerentes | — |
-| 6 — Testes e segurança | **Contínuo**: 91 testes unitários/integração e 34 E2E. **Falta**: MFA da equipe, CSP com nonce, revisão de segurança final | docs 08–10 |
+| 6 — Testes e segurança | **Feito** (ver doc 14 §5). **Falta**: revisão de segurança externa (OWASP ASVS) antes do lançamento | docs 08–10, 14 |
 | 7 — Integrações reais | **Preparado só para catálogo** (feed). **Falta**: contratos e adaptadores para pedidos (VTEX), e-mail, pagamentos, monitoramento | doc 05 §6 |
 | 8 — Homologação e produção | **Não iniciado**: checklist, backups testados, monitoramento | — |
 
@@ -89,7 +89,19 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 | D. Painel | ✅ concluída |
 | E. Dados de demonstração coerentes | ✅ concluída (`src/demo/seed.ts`) |
 | F. Documentação | ✅ docs 12, 13, 14 e OpenAPI |
-| G. Segurança (MFA, CSP) e e-mail real | ⏳ pendente |
+| G. Segurança (MFA, CSP) e e-mail real | ✅ concluída: verificação em duas etapas, CSP com nonce, rotina de limpeza, contrato do e-mail real testado com API simulada. **Pendentes externos:** conta do provedor de e-mail e credenciais do login com Google |
+
+### 4.2 Etapa G — o que foi feito
+| Item | Como | Teste |
+|---|---|---|
+| Verificação em duas etapas (TOTP) | App autenticador (RFC 6238, 6 dígitos, 30 s, tolerância ±30 s); segredo criptografado (AES-256-GCM); 10 códigos de recuperação de uso único guardados só como HMAC; código já usado é recusado (anti-replay atômico no banco); 10 tentativas por 15 min por conta; sessão fica **pendente** (10 min, sem acesso a nada) até o código | `tests/unit/security.test.ts` (vetores da RFC), `tests/integration/mfa.test.ts`, `tests/e2e/security.spec.ts` |
+| Obrigatória para a equipe | `REQUIRE_STAFF_MFA`; em produção é **sempre** obrigatória e a aplicação recusa iniciar com `false`. Sem segundo fator, a sessão de operadora/administradora perde os papéis internos (vale para telas, ações e exportações) e é levada ao cadastro; a equipe não pode desativar o próprio | `mfa.test.ts` |
+| Redefinição | Administradora remove o segundo fator de **outra** pessoa, com motivo obrigatório, encerrando as sessões e registrando na auditoria (Painel → Equipe) | `mfa.test.ts` |
+| CSP com nonce | `src/proxy.ts`: nonce novo por requisição, `script-src 'nonce' 'strict-dynamic'`, `object-src 'none'`, `frame-ancestors 'none'`, `form-action 'self'`, `upgrade-insecure-requests` quando o site é https. Todas as páginas passaram a ser renderizadas por requisição (condição para o nonce) | unitário + E2E (nenhum script bloqueado, nonce muda a cada resposta) |
+| Rotina de limpeza | `/api/cron/limpeza` diária (sessões, links, limites, ativações abandonadas, anonimização de contatos) | `mfa.test.ts` |
+| E-mail real | Adaptador Resend com testes de contrato (formato, nova tentativa em erro temporário, sem repetição em erro definitivo) usando API simulada | `tests/unit/email.test.ts` |
+
+**Decisões tomadas nesta etapa (reversíveis):** `style-src` mantém `'unsafe-inline'` (o React e o `next/image` usam atributos `style`; scripts continuam estritamente protegidos). Criadoras **podem** ativar a verificação, mas não são obrigadas. Retenção de contatos públicos proposta em 180 dias (parâmetro editável, a confirmar com o jurídico).
 
 ## 5. Decisões confirmadas pela usuária
 Todas as recomendações abaixo foram aceitas e aplicadas.

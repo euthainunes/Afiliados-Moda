@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 // Cabeçalhos de segurança aplicados a todas as rotas.
-// A CSP completa (com nonce) será configurada na Fase 8; aqui ficam os cabeçalhos sem risco de quebrar a aplicação.
+// A Content Security Policy depende de um nonce por requisição e por isso é definida em src/proxy.ts.
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },

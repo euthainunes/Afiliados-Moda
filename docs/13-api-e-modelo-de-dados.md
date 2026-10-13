@@ -13,6 +13,7 @@ Especificação OpenAPI: [`docs/api/openapi.yaml`](./api/openapi.yaml). Resumo:
 | `GET /admin/relatorios/exportar` | `reports.export` | CSV auditado |
 | `GET /app/configuracoes/exportar` | sessão | Portabilidade LGPD |
 | `GET /l/{slug}/opengraph-image` | público | Imagem de compartilhamento |
+| `GET /api/cron/limpeza` | `Bearer CRON_SECRET` | Rotina diária de retenção (sessões, links, limites, contatos) |
 
 ## Serviços de domínio (regras de negócio no servidor)
 Toda tela chama estes serviços por Server Actions, que **relêem a sessão** e passam o ator ao serviço; o serviço confere permissão (`assertCan`) e propriedade. Validação com Zod; erros esperados viram mensagens no formulário, inesperados vão ao registro de erros.
@@ -20,7 +21,8 @@ Toda tela chama estes serviços por Server Actions, que **relêem a sessão** e 
 | Módulo | Arquivo | Principais operações |
 |---|---|---|
 | Identidade | `modules/identity/service.ts` | cadastro, confirmação, login, recuperação/troca de senha |
-| Sessões | `modules/identity/sessions.ts` | criar/validar/revogar sessões |
+| Sessões | `modules/identity/sessions.ts` | criar/validar/revogar sessões; sessão pendente até o segundo fator |
+| Duas etapas | `modules/identity/mfa.ts`, `totp.ts` | TOTP (RFC 6238), códigos de recuperação, anti-replay, obrigatoriedade da equipe, redefinição por administradora |
 | Equipe | `modules/identity/team.ts` | conceder/retirar papéis (mantém 1 admin) |
 | Acesso | `modules/access/*` | papéis, permissões, quatro olhos |
 | Catálogo | `modules/catalog/*` | importação de feed, busca, favoritos, agendamento, saúde |
@@ -34,7 +36,7 @@ Toda tela chama estes serviços por Server Actions, que **relêem a sessão** e 
 | Suporte | `modules/support/service.ts` | atendimentos e contato público |
 | Privacidade | `modules/privacy/service.ts` | corrigir perfil, exportar, excluir (anonimizar) |
 | Configurações | `modules/settings/service.ts` | parâmetros validados e auditados |
-| Sistema | `modules/system/health.ts` | verificações de saúde |
+| Sistema | `modules/system/health.ts`, `cleanup.ts` | verificações de saúde; rotina de retenção |
 | Auditoria | `modules/audit/*` | trilha imutável com mascaramento |
 
 ## Modelo de dados (PostgreSQL, migrações em `db/migrations`)
@@ -43,7 +45,9 @@ Toda tela chama estes serviços por Server Actions, que **relêem a sessão** e 
 erDiagram
   users ||--|| profiles : ""
   users ||--o{ user_roles : ""
-  users ||--o{ sessions : ""
+  users ||--o{ sessions : "mfa_verified_at"
+  users ||--o| user_mfa : "segredo TOTP criptografado"
+  users ||--o{ mfa_recovery_codes : "só HMAC"
   users ||--o{ consents : ""
   users ||--o| payout_accounts : "CPF/PIX criptografados"
   brands ||--o{ campaigns : ""
@@ -104,7 +108,7 @@ erDiagram
 | Compradoras | **não armazenado** | apenas id do pedido, itens e valores |
 
 ### Retenção (proposta, validar com jurídico)
-- Sessões revogadas/expiradas e buckets de limite: limpeza periódica (job a criar).
-- Contatos do site sem conta: 12 meses.
+- Rotina diária `/api/cron/limpeza` (`modules/system/cleanup.ts`): sessões vencidas/encerradas há 30 dias, links de e-mail usados/vencidos há 7 dias, limites de tentativas com mais de 24 h e ativações de duas etapas não concluídas em 24 h são apagados.
+- Contatos do site sem conta: nome e e-mail anonimizados após o encerramento + `privacy.contact_retention_days` (padrão 180 dias, ajustável no painel).
 - Cliques: 24 meses (agregar depois).
 - Financeiro e auditoria: prazo legal contábil/fiscal (ex.: 5 anos), pseudonimizado após exclusão.

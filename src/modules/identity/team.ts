@@ -1,6 +1,6 @@
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { profiles, userRoles, users } from "@/lib/db/schema";
+import { profiles, userMfa, userRoles, users } from "@/lib/db/schema";
 import { assertCan, type Principal } from "@/modules/access/can";
 import { recordAudit } from "@/modules/audit/service";
 import { revokeAllSessions } from "./sessions";
@@ -17,10 +17,11 @@ export type StaffRole = "operator" | "admin";
 export async function listTeam(actor: Principal) {
   assertCan(actor, "team.manage");
   const rows = await db
-    .select({ userId: users.id, email: users.email, displayName: profiles.displayName, role: userRoles.role, grantedAt: userRoles.grantedAt, status: users.status })
+    .select({ userId: users.id, email: users.email, displayName: profiles.displayName, role: userRoles.role, grantedAt: userRoles.grantedAt, status: users.status, mfaEnabledAt: userMfa.enabledAt })
     .from(userRoles)
     .innerJoin(users, eq(users.id, userRoles.userId))
     .innerJoin(profiles, eq(profiles.userId, users.id))
+    .leftJoin(userMfa, eq(userMfa.userId, users.id))
     .where(inArray(userRoles.role, ["operator", "admin"]))
     .orderBy(asc(profiles.displayName));
   return rows;

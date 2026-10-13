@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { env } from "@/lib/env";
+import { env, staffMfaRequired } from "@/lib/env";
 import { assertCan, type Principal } from "@/modules/access/can";
 
 export type HealthCheck = { name: string; ok: boolean; detail: string };
@@ -41,6 +41,17 @@ export async function systemHealth(actor: Principal): Promise<{ checks: HealthCh
   });
   checks.push({ name: "E-mail", ok: e.APP_ENV !== "production" || e.MAIL_DRIVER === "resend", detail: `provedor: ${e.MAIL_DRIVER}` });
   checks.push({ name: "Criptografia de dados pessoais", ok: e.APP_ENV !== "production" || !!e.PII_ENCRYPTION_KEY, detail: e.PII_ENCRYPTION_KEY ? "chave dedicada configurada" : "usando chave derivada (somente desenvolvimento)" });
+  const [{ n: staffWithoutMfa }] = await db.execute<{ n: number }>(sql`
+    select count(distinct r.user_id)::int as n from user_roles r
+    left join user_mfa m on m.user_id = r.user_id and m.enabled_at is not null
+    where r.role in ('operator', 'admin') and m.user_id is null`);
+  checks.push({
+    name: "Verificação em duas etapas da equipe",
+    ok: staffMfaRequired() || e.APP_ENV !== "production",
+    detail: staffMfaRequired()
+      ? `obrigatória; ${staffWithoutMfa} pessoa(s) da equipe sem cadastro (painel bloqueado para elas)`
+      : `não obrigatória neste ambiente (REQUIRE_STAFF_MFA); ${staffWithoutMfa} pessoa(s) da equipe sem cadastro`,
+  });
   checks.push({ name: "Agendador", ok: !!process.env.CRON_SECRET, detail: process.env.CRON_SECRET ? "segredo configurado" : "CRON_SECRET ausente: rotinas agendadas recusarão chamadas" });
 
   return { checks, environment: e.APP_ENV };

@@ -12,6 +12,8 @@ export const SESSION_POLICY = {
   staff: { idleMs: 8 * 3600_000, absoluteMs: 12 * 3600_000 },
   // Intervalo mínimo entre atualizações de "visto por último", para não escrever a cada requisição.
   touchIntervalMs: 15 * 60_000,
+  // Prazo para digitar o código do app depois de acertar a senha.
+  pendingMfaMs: 10 * 60_000,
 } as const;
 
 export const TOKEN_TTL = {
@@ -26,4 +28,7 @@ export const RATE_LIMITS = {
   signUpPerIp: { limit: 10, windowSec: 3600 },
   emailPerAddress: { limit: 3, windowSec: 3600 },
   emailPerIp: { limit: 10, windowSec: 3600 },
+  // Códigos da verificação em duas etapas (por conta). Com 3 códigos válidos por vez, 10 tentativas
+  // a cada 15 min tornam a adivinhação inviável.
+  mfaPerUser: { limit: 10, windowSec: 15 * 60 },
 } as const;

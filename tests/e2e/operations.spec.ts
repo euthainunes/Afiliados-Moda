@@ -93,8 +93,9 @@ test("administradora concede acesso de operadora pela tela de equipe", async ({ 
   const pessoa = await seedAccount();
   await loginAs(page, admin.email);
   await page.goto("/admin/equipe");
-  await page.getByLabel("E-mail da conta").fill(pessoa.email);
-  await page.getByRole("button", { name: "Conceder" }).click();
+  const conceder = page.getByRole("region", { name: "Conceder acesso" });
+  await conceder.getByLabel("E-mail da conta").fill(pessoa.email);
+  await conceder.getByRole("button", { name: "Conceder" }).click();
   await expect(page.getByText(/Acesso concedido/)).toBeVisible();
   await expect(page.getByRole("cell", { name: new RegExp(pessoa.email) })).toBeVisible();
 });
