@@ -31,5 +31,6 @@ Detalhes, testes e decisões em [docs/08](docs/08-fase-3-fundacao.md).
 | [08 — Fase 3: fundação técnica](docs/08-fase-3-fundacao.md) | Critérios de aceite, decisões, pendências e como rodar |
 | [09 — Fase 4: catálogo e looks](docs/09-fase-4-catalogo-e-looks.md) | Critérios de aceite, o que não está comprovado, decisões e pendências |
 | [10 — Fase 5: operação](docs/10-fase-5-operacao.md) | Marcas, campanhas, regras de comissão, agendamento, relatórios e equipe |
+| [11 — Plano da plataforma completa](docs/11-plano-plataforma-completa.md) | O que existe, o que falta, modo demonstração seguro, integrações e próximas etapas |
 
 > Percentuais comerciais (25% / 20 p.p. / 5 p.p.) são premissas sujeitas a contrato e são tratados como configuração, nunca como código.
