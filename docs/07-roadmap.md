@@ -22,7 +22,7 @@ gantt
 
 | Fase | Entregáveis | Dependências | Critérios de aceite | Riscos | Prioridade |
 |---|---|---|---|---|---|
-| **1 Descoberta** | Estes documentos (`docs/01–07`) | Documento original, respostas da Suntime | Sócias aprovam MVP, sitemap e decisões D1–D20 com responsáveis | Premissas erradas pela falta do doc principal | P0 |
+| **1 Descoberta** | Estes documentos (`docs/01–07`) | Validação das sócias, respostas da Suntime | Sócias aprovam MVP, sitemap e decisões D1–D20 com responsáveis | Premissas de produto não validadas (D20) | P0 |
 | **2 UX/UI** | Fluxos, wireframes mobile-first das telas MVP, design system (tokens + componentes), protótipo navegável | D16 (nome/identidade) | Teste com 5 usuárias: montar e compartilhar um look sem ajuda em < 3 min | Escopo visual crescer | P0 |
 | **3 Fundação** | Projeto Next.js + TS, CI, banco + migrações iniciais, autenticação, RBAC, auditoria, layouts e design system em código, ambientes | D18 | Cadastro/login/recuperação funcionando; testes de autorização (usuária não acessa dado alheio; operador não acessa financeiro) passando | — | P0 |
 | **4 Catálogo e looks** | Importador de feed (fictício → real), catálogo com busca/filtros, detalhe de produto, favoritos, montador, publicação, página pública com OG, perfil público, redirecionador com cliques | Feed XML real (pode iniciar com fictício) | Look publicado com URL própria mostra prévia correta no WhatsApp; clique gera `click_id` e redireciona ao produto correto; Lighthouse mobile ≥ 90 nas páginas públicas | Qualidade do feed | P0 |
@@ -35,7 +35,7 @@ gantt
 **Regra de ouro:** o lançamento público do catálogo e dos looks (sem recompensas reais, com aviso "programa de recompensas em breve") pode acontecer ao fim da Fase 5, para começar a validar H1–H2 enquanto a Fase 7 é concluída — **decisão de negócio a confirmar**.
 
 ## Próxima ação imediata
-1. Receber o **documento principal** da ideia e validar este planejamento.
+1. Validar este planejamento e as decisões D1–D20 (`docs/06`).
 2. Enviar à Suntime o checklist de auditoria (doc 05 §6.1) e pedir o **XML real**.
 3. Definir nome/domínio (D16) e stack (D18).
 4. Iniciar Fase 3 (fundação técnica) e Fase 2 (UX/UI) em paralelo.

@@ -1,6 +1,6 @@
 # 05 — Afiliados, recompensas, financeiro e integração VTEX
 
-> Baseado no *Adendo Técnico*. Nenhum pedido, recebimento ou pagamento será simulado como real. Ambientes de teste usam dados marcados com `is_test = true` e **não** geram recompensas reais.
+> Baseado no [*Adendo Técnico*](./00-adendo-tecnico.md). Nenhum pedido, recebimento ou pagamento será simulado como real. Ambientes de teste usam dados marcados com `is_test = true` e **não** geram recompensas reais.
 
 ## 1. Glossário de estados (distinções obrigatórias)
 

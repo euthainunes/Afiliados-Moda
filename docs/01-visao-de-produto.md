@@ -1,7 +1,7 @@
 # 01 — Visão de produto, públicos e MVP
 
 > **Status:** Fase 1 (Descoberta) — documento vivo.
-> **Fonte de referência:** o texto recebido foi o *Adendo Técnico — Comissões, Recompensas, Liquidação Financeira e Integração VTEX* e o briefing do projeto. **O documento principal da ideia (citado como "documento anexo") não foi recebido** — apenas o adendo. Tudo o que vem do briefing/adendo está marcado como **[Definido]**; o que é inferência ou recomendação está marcado como **[Recomendação]** e precisa de validação; o que depende de terceiros está marcado como **[Pendente]**.
+> **Fontes de referência:** o briefing do projeto e o [*Adendo Técnico — Comissões, Recompensas, Liquidação Financeira e Integração VTEX*](./00-adendo-tecnico.md) (o "documento anexo"). O adendo detalha o modelo comercial, financeiro e a integração VTEX; aspectos de produto não cobertos por ele (público-alvo detalhado, tom de marca, funcionalidades sociais) são recomendações. Tudo o que vem do briefing/adendo está marcado como **[Definido]**; o que é inferência ou recomendação está marcado como **[Recomendação]** e precisa de validação; o que depende de terceiros está marcado como **[Pendente]**.
 
 ---
 

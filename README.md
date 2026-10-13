@@ -8,6 +8,7 @@ Plataforma de descoberta de produtos de moda, montagem e compartilhamento de loo
 ## Documentação
 | Documento | Conteúdo |
 |---|---|
+| [00 — Adendo técnico (fonte)](docs/00-adendo-tecnico.md) | Documento de referência: modelo comercial, financeiro e VTEX |
 | [01 — Visão de produto](docs/01-visao-de-produto.md) | Proposta de valor, perfis, funcionamento, regras, MVP, evolução |
 | [02 — Arquitetura funcional e sitemap](docs/02-arquitetura-funcional-e-sitemap.md) | Ambientes, páginas, navegação, fluxos, RBAC |
 | [03 — Modelo de dados e integrações](docs/03-modelo-de-dados-e-integracoes.md) | ERD, entidades, restrições, classificação de dados, integrações |

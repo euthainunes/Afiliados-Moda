@@ -23,7 +23,7 @@
 | D17 | Idade mínima | 18 anos (recebimento de valores) | Capacidade civil | Jurídico | Cadastro |
 | D18 | Stack: Supabase vs. Neon+Auth.js | Supabase | Menos peças no MVP | Técnico | Fase 3 |
 | D19 | Portal da marca no MVP | Não | Uma marca, relacionamento próximo | Produto | — |
-| D20 | Documento principal da ideia | **Enviar o documento original** — só o adendo foi recebido | Evitar premissas erradas | Sócias | Revisão desta Fase 1 |
+| D20 | Público-alvo e posicionamento detalhados (faixa etária, estilo, perfil de criadora) | Mulheres 18–40 que já compartilham moda em redes sociais, com foco em micro-criadoras | Orienta identidade visual, tom e curadoria; o material recebido não detalha este ponto | Sócias | Fase 2 (UX/UI) |
 
 ## 2. Riscos
 
@@ -43,7 +43,7 @@
 | Custos de infraestrutura crescendo com cliques | Baixa | Baixo | Particionamento, agregações, limites de gasto |
 
 ## 3. Inconsistências e pontos de atenção no material recebido
-1. **Documento principal ausente:** apenas o adendo técnico foi recebido; aspectos de produto (público-alvo exato, tom de marca, diferenciais de conteúdo) foram inferidos e estão marcados como recomendação.
+1. **Escopo de produto pouco detalhado no material recebido:** o [adendo](./00-adendo-tecnico.md) é minucioso no financeiro e na VTEX, mas não descreve público-alvo, tom de marca ou funcionalidades sociais; esses pontos foram inferidos e estão marcados como recomendação (ver D20).
 2. "Venda registrada na VTEX" vs. "venda atribuída": o adendo lista 4 eventos financeiros e 9 estados de venda — unificados no glossário do doc 05.
 3. O exemplo R$ 100 → R$ 25 pressupõe base = valor elegível; com descontos/frete os valores mudam (D1).
 4. A hipótese de cobrar a marca antes de repassar à usuária depende de contrato e de capital de giro — tratada como hipótese, não como fluxo definido.
