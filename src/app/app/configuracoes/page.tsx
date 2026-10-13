@@ -6,6 +6,10 @@ import { requireSession } from "@/lib/auth/current";
 import { listActiveSessions } from "@/modules/identity/sessions";
 import { revokeOtherSessionsAction, revokeSessionAction } from "./actions";
 import { ChangePasswordForm } from "./change-password-form";
+import { DeleteAccountForm, ProfileForm } from "./privacy-forms";
+import { db } from "@/lib/db";
+import { profiles } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export const metadata: Metadata = { title: "Conta e privacidade" };
 
@@ -21,6 +25,7 @@ function describeDevice(ua: string | null) {
 export default async function SettingsPage() {
   const session = await requireSession("/app/configuracoes");
   const activeSessions = await listActiveSessions(session.user.id);
+  const [profile] = await db.select().from(profiles).where(eq(profiles.userId, session.user.id));
 
   return (
     <>
@@ -36,9 +41,11 @@ export default async function SettingsPage() {
             <dt className="text-muted">E-mail</dt>
             <dd>{session.user.email}</dd>
           </dl>
-          <p className="mt-4 text-sm text-muted">
-            Edição de perfil, exportação dos seus dados e exclusão da conta chegam nas próximas etapas.
-          </p>
+        </Card>
+
+        <Card aria-labelledby="perfil">
+          <h2 id="perfil" className="mb-4 text-lg font-semibold">Perfil público</h2>
+          <ProfileForm defaults={{ displayName: profile.displayName, username: profile.username, bio: profile.bio ?? "" }} />
         </Card>
 
         <Card aria-labelledby="senha">
@@ -73,6 +80,23 @@ export default async function SettingsPage() {
               </li>
             ))}
           </ul>
+        </Card>
+
+        <Card aria-labelledby="privacidade">
+          <h2 id="privacidade" className="text-lg font-semibold">Seus dados (LGPD)</h2>
+          <p className="mt-2 text-sm text-muted">
+            Você pode baixar uma cópia dos seus dados a qualquer momento. Para outros pedidos (como revisão de dados ou revogação de consentimento), abra um atendimento na categoria Privacidade.
+          </p>
+          <a href="/app/configuracoes/exportar" className="mt-4 inline-flex h-9 items-center rounded-lg border border-line px-3 text-sm font-medium hover:bg-canvas">
+            Baixar meus dados (JSON)
+          </a>
+          <div className="mt-8 border-t border-line pt-6">
+            <h3 className="font-semibold text-danger">Excluir conta</h3>
+            <p className="mt-1 mb-4 text-sm text-muted">
+              Sua conta é anonimizada, seus looks saem do ar e seus dados de recebimento são apagados. Registros financeiros são mantidos sem identificação pelo prazo exigido por lei. Recompensas ainda não resgatadas são perdidas, conforme o regulamento.
+            </p>
+            <DeleteAccountForm />
+          </div>
         </Card>
       </div>
     </>

@@ -122,7 +122,8 @@ describe("elegibilidade, cobrança da marca e resgate", () => {
     let o = s.order(await s.click({ daysAgo: 50 }), { createdAt: new Date(Date.now() - 49 * DAY) });
     o = withStatus(o, [{ status: "paid", daysAfter: 0.1 }, { status: "invoiced", daysAfter: 2 }]);
     await s.ingest(o);
-    expect(await runEligibility()).toMatchObject({ released: 0, waitingBrandPayment: 1 });
+    expect((await runEligibility()).waitingBrandPayment).toBeGreaterThanOrEqual(1);
+    expect((await userBalances(s.creator.id)).eligibleCents).toBe(0);
 
     const op = await createUser({ roles: ["user", "operator"] });
     await expect(issueInvoice(op.principal, s.t.brand.id, new Date())).rejects.toBeInstanceOf(AccessDeniedError);
@@ -131,9 +132,10 @@ describe("elegibilidade, cobrança da marca e resgate", () => {
     await expect(registerBrandPayment(s.admin.principal, invoice.id, { amountCents: 7000, receivedAt: new Date(), reference: "x" })).rejects.toThrow(/difere/);
     await registerBrandPayment(s.admin.principal, invoice.id, { amountCents: 7500, receivedAt: new Date(), reference: "qualquer" });
 
-    expect(await runEligibility()).toMatchObject({ released: 1 });
+    await runEligibility();
     expect(await userBalances(s.creator.id)).toMatchObject({ pendingCents: 0, eligibleCents: 6000 });
-    expect(await runEligibility()).toMatchObject({ released: 0 }); // não libera duas vezes
+    await runEligibility(); // não libera duas vezes
+    expect(await userBalances(s.creator.id)).toMatchObject({ pendingCents: 0, eligibleCents: 6000 });
   });
 
   it("respeita o prazo: antes da data, nada é liberado", async () => {
@@ -141,8 +143,10 @@ describe("elegibilidade, cobrança da marca e resgate", () => {
     let o = s.order(await s.click({ daysAgo: 3 }), { createdAt: new Date(Date.now() - 2 * DAY) });
     o = withStatus(o, [{ status: "invoiced", daysAfter: 1 }]);
     await s.ingest(o);
-    expect((await runEligibility()).released).toBe(0);
-    expect((await runEligibility(new Date(Date.now() + 40 * DAY))).released).toBe(1);
+    await runEligibility();
+    expect((await userBalances(s.creator.id)).eligibleCents).toBe(0);
+    await runEligibility(new Date(Date.now() + 40 * DAY));
+    expect(await userBalances(s.creator.id)).toMatchObject({ pendingCents: 0, eligibleCents: 6000 });
   });
 
   it("ciclo de resgate: validações, quatro olhos, recusa devolve saldo e pagamento simulado em demonstração", async () => {

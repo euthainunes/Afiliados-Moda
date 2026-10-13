@@ -178,8 +178,9 @@ export async function processOrderConversion(tx: Tx, orderId: string, now = new 
       commissionCents: split.commissionCents,
       userRewardCents: split.userCents,
       platformCents: split.platformCents,
-      approvedAt: state === "approved" ? (conversion.approvedAt ?? now) : conversion.approvedAt,
-      canceledAt: state === "canceled" ? (conversion.canceledAt ?? now) : null,
+      // Datas de negócio: quando o pedido atingiu o marco na loja (não a hora do processamento).
+      approvedAt: state === "approved" ? (conversion.approvedAt ?? start ?? now) : conversion.approvedAt,
+      canceledAt: state === "canceled" ? (conversion.canceledAt ?? order.statusChangedAt) : null,
       eligibleFrom,
     })
     .where(eq(conversions.id, conversion.id));

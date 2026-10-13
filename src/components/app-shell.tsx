@@ -11,8 +11,10 @@ export function AppShell({
   mobileNav,
   userName,
   area,
+  notifications,
   children,
 }: {
+  notifications?: { href: string; unread: number };
   nav: NavItem[];
   // Navegação inferior fixa no celular (área da usuária). Quando presente, o menu superior some em telas pequenas.
   mobileNav?: NavItem[];
@@ -30,7 +32,7 @@ export function AppShell({
           {area && <span className="rounded-full bg-ink px-2.5 py-0.5 text-xs font-medium text-white">{area}</span>}
           <nav
             aria-label="Área"
-            className={mobileNav ? "hidden gap-1 sm:flex" : "order-last flex w-full gap-1 overflow-x-auto sm:order-none sm:w-auto"}
+            className={mobileNav ? "hidden flex-wrap gap-1 sm:flex" : "order-last flex w-full gap-1 overflow-x-auto sm:flex-wrap"}
           >
             {nav.map((item) => (
               <Link key={item.href} href={item.href} className={buttonClasses("ghost", "sm")}>
@@ -39,6 +41,12 @@ export function AppShell({
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3 text-sm">
+            {notifications && (
+              <Link href={notifications.href} className={buttonClasses("ghost", "sm")} aria-label={`Notificações${notifications.unread ? `: ${notifications.unread} não lidas` : ""}`}>
+                <span aria-hidden>🔔</span>
+                {notifications.unread > 0 && <span className="rounded-full bg-brand px-1.5 text-xs text-brand-ink">{notifications.unread > 99 ? "99+" : notifications.unread}</span>}
+              </Link>
+            )}
             <span className="hidden text-muted sm:inline">{userName}</span>
             <form action={logoutAction}>
               <button type="submit" className={buttonClasses("secondary", "sm")}>

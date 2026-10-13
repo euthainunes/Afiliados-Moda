@@ -111,6 +111,33 @@ export class DemoOrderSource implements OrderSource {
         isTest: false,
       });
     }
+
+    // Dois pedidos sem atribuição válida, para demonstrar a conciliação: um sem identificador e outro
+    // com identificador que não corresponde a nenhum clique registrado.
+    const sample = catalog[0];
+    if (sample) {
+      for (const [suffix, clickId, daysAgo] of [["SEM-CLIQUE", null, 9], ["CLIQUE-DESCONHECIDO", "01J0DEMO0DESCONHECIDO00000", 4]] as const) {
+        // Ancorado no início do dia (UTC) para o pedido ser idêntico entre sincronizações do mesmo dia.
+        const createdAt = new Date(Math.floor(now.getTime() / DAY) * DAY - daysAgo * DAY);
+        const item = { externalSku: skuOf(sample.id, 0), title: sample.title, quantity: 1, unitPriceCents: sample.salePriceCents ?? sample.priceCents, listPriceCents: sample.priceCents, discountCents: 0, returnedQuantity: 0 };
+        orders.push({
+          externalId: `DEMO-${suffix}`,
+          createdAt,
+          status: "invoiced",
+          statusRaw: "demo-invoiced",
+          statusChangedAt: new Date(createdAt.getTime() + DAY),
+          statusHistory: [
+            { status: "created", statusRaw: "demo-created", at: createdAt },
+            { status: "invoiced", statusRaw: "demo-invoiced", at: new Date(createdAt.getTime() + DAY) },
+          ],
+          currency: "BRL",
+          items: [item],
+          shippingCents: 1990,
+          attribution: { clickId, method: "demo_click_id" },
+          isTest: false,
+        });
+      }
+    }
     return orders;
   }
 

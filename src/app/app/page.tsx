@@ -6,13 +6,15 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, PageTitle } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/current";
 import { listMyLooks } from "@/modules/looks/service";
+import { userBalances } from "@/modules/finance/ledger";
+import { Money } from "@/components/finance/money";
 import { createLookAction } from "./looks/actions";
 
 export const metadata: Metadata = { title: "Início" };
 
 export default async function DashboardPage() {
   const session = await requireSession("/app");
-  const looks = await listMyLooks(session.user.id);
+  const [looks, balances] = await Promise.all([listMyLooks(session.user.id), userBalances(session.user.id)]);
   const published = looks.filter((l) => l.look.status === "published");
   const totalClicks = looks.reduce((sum, l) => sum + l.clicks, 0);
 
@@ -20,6 +22,14 @@ export default async function DashboardPage() {
     { label: "Looks publicados", value: published.length },
     { label: "Rascunhos", value: looks.filter((l) => l.look.status === "draft").length },
     { label: "Cliques nas peças", value: totalClicks, help: "Sem robôs e sem seus próprios cliques" },
+  ];
+  const shortcuts = [
+    { href: "/app/desempenho", label: "Desempenho", text: "Cliques e vendas por dia" },
+    { href: "/app/recompensas", label: "Recompensas", text: "Saldos, extrato e resgates" },
+    { href: "/app/links", label: "Meus links", text: "Links de cada peça" },
+    { href: "/app/favoritos", label: "Favoritos", text: "Peças salvas" },
+    { href: "/app/notificacoes", label: "Notificações", text: "Avisos da plataforma" },
+    { href: "/app/suporte", label: "Suporte", text: "Fale com a equipe" },
   ];
 
   return (
@@ -34,6 +44,30 @@ export default async function DashboardPage() {
           </Card>
         ))}
       </dl>
+
+      <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+        <Card>
+          <dt className="text-sm text-muted">Recompensa pendente</dt>
+          <dd className="mt-1 text-2xl font-semibold"><Money cents={balances.pendingCents} /></dd>
+        </Card>
+        <Card>
+          <dt className="text-sm text-muted">Disponível para resgate</dt>
+          <dd className="mt-1 text-2xl font-semibold"><Money cents={balances.eligibleCents} /></dd>
+        </Card>
+        <Card>
+          <dt className="text-sm text-muted">Já recebido</dt>
+          <dd className="mt-1 text-2xl font-semibold"><Money cents={balances.paidCents} /></dd>
+        </Card>
+      </dl>
+
+      <nav aria-label="Atalhos" className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {shortcuts.map((s) => (
+          <Link key={s.href} href={s.href} className="rounded-xl border border-line bg-surface p-4 hover:bg-canvas">
+            <span className="font-medium">{s.label}</span>
+            <span className="mt-1 block text-xs text-muted">{s.text}</span>
+          </Link>
+        ))}
+      </nav>
 
       <div className="mt-6 flex flex-wrap gap-3">
         <form action={createLookAction}>
@@ -61,9 +95,6 @@ export default async function DashboardPage() {
         )}
       </section>
 
-      <p className="mt-10 text-sm text-muted">
-        Vendas atribuídas e recompensas aparecerão aqui quando o programa for ativado, depois da validação com as marcas.
-      </p>
     </>
   );
 }

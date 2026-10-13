@@ -31,6 +31,8 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:justify-between">
         <p>© {new Date().getFullYear()} {site.name} · nome provisório</p>
         <nav aria-label="Institucional" className="flex flex-wrap gap-4">
+          <Link href="/faq" className="hover:underline">Perguntas frequentes</Link>
+          <Link href="/contato" className="hover:underline">Contato</Link>
           <Link href="/termos" className="hover:underline">Termos de uso</Link>
           <Link href="/privacidade" className="hover:underline">Privacidade</Link>
           <Link href="/regulamento" className="hover:underline">Regulamento de recompensas</Link>

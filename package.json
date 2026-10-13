@@ -14,7 +14,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --tsconfig tsconfig.json scripts/migrate.mts",
     "db:seed": "tsx --conditions=react-server --tsconfig tsconfig.json scripts/seed.mts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:reset": "tsx scripts/reset.mts && pnpm db:migrate && pnpm db:seed"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",

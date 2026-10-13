@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { EnvironmentBanner } from "@/components/environment-banner";
 import { site } from "@/config/site";
 import "./globals.css";
 
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Pular para o conteúdo
         </a>
+        <EnvironmentBanner />
         {children}
       </body>
     </html>

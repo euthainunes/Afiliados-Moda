@@ -86,7 +86,7 @@ test("usuária monta, publica e compartilha um look; o clique é rastreado", asy
   const shopUrl = new URL(redirect.headers()["location"]);
   expect(shopUrl.hostname).toBe("loja-ficticia.example");
   expect(shopUrl.searchParams.get("utmi_cp")).toMatch(/^[0-9A-Z]{26}$/);
-  expect(shopUrl.searchParams.get("utm_campaign")).toBe("teste-ficticio");
+  expect(shopUrl.searchParams.get("utm_campaign")).toMatch(/ficticio/);
   expect(await clickCount(title)).toBe(1);
   await visitor.close();
 

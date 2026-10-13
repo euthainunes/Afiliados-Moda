@@ -9,13 +9,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const session = await requirePermission("admin.access", "/admin");
   const principal = toPrincipal(session);
   const nav: NavItem[] = [{ href: "/admin", label: "Visão geral" }];
-  if (can(principal, "users.read")) nav.push({ href: "/admin/usuarias", label: "Usuárias" });
-  if (can(principal, "brands.manage")) nav.push({ href: "/admin/marcas", label: "Marcas" });
-  if (can(principal, "catalog.manage")) nav.push({ href: "/admin/catalogo", label: "Catálogo" });
-  if (can(principal, "looks.moderate")) nav.push({ href: "/admin/looks", label: "Looks" });
-  if (can(principal, "reports.read")) nav.push({ href: "/admin/relatorios", label: "Relatórios" });
-  if (can(principal, "team.manage")) nav.push({ href: "/admin/equipe", label: "Equipe" });
-  if (can(principal, "audit.read")) nav.push({ href: "/admin/auditoria", label: "Auditoria" });
+  const add = (perm: Parameters<typeof can>[1], href: string, label: string) => can(principal, perm) && nav.push({ href, label });
+  add("orders.read", "/admin/vendas", "Vendas");
+  add("ledger.read", "/admin/financeiro", "Financeiro");
+  add("payouts.review", "/admin/resgates", "Resgates");
+  add("reconciliation.manage", "/admin/conciliacao", "Conciliação");
+  add("users.read", "/admin/usuarias", "Usuárias");
+  add("users.read", "/admin/suporte", "Suporte");
+  add("brands.manage", "/admin/marcas", "Marcas");
+  add("catalog.manage", "/admin/catalogo", "Catálogo");
+  add("looks.moderate", "/admin/looks", "Looks");
+  add("integrations.manage", "/admin/integracoes", "Integrações");
+  add("reports.read", "/admin/relatorios", "Relatórios");
+  add("team.manage", "/admin/equipe", "Equipe");
+  add("settings.manage", "/admin/configuracoes", "Configurações");
+  add("settings.manage", "/admin/saude", "Saúde");
+  add("audit.read", "/admin/auditoria", "Auditoria");
   nav.push({ href: "/app", label: "Minha área" });
   return (
     <AppShell nav={nav} userName={session.user.displayName} area="Painel interno">
