@@ -6,10 +6,13 @@ export function SiteHeader() {
   return (
     <header className="border-b border-line bg-surface">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="font-display text-xl font-semibold">
+        <Link href="/" className="whitespace-nowrap font-display text-lg font-semibold sm:text-xl">
           {site.name}
         </Link>
-        <nav aria-label="Principal" className="flex items-center gap-2">
+        <nav aria-label="Principal" className="flex items-center gap-1 sm:gap-2">
+          <Link href="/looks" className={buttonClasses("ghost", "sm")}>
+            Looks
+          </Link>
           <Link href="/entrar" className={buttonClasses("ghost", "sm")}>
             Entrar
           </Link>

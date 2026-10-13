@@ -10,7 +10,16 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 ];
 
+// Hosts de imagens de produtos (CDNs das marcas), separados por vírgula. Ex.: "suntime.vteximg.com.br".
+const imageHosts = (process.env.IMAGE_REMOTE_HOSTS ?? "")
+  .split(",")
+  .map((h) => h.trim())
+  .filter(Boolean);
+
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: imageHosts.map((hostname) => ({ protocol: "https" as const, hostname })),
+  },
   // Cache Components fica desligado na fundação: as áreas autenticadas são renderizadas por requisição.
   // Será reavaliado na Fase 4 para as páginas públicas de looks.
   cacheComponents: false,

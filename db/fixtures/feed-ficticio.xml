@@ -1,0 +1,1218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FEED FICTÍCIO gerado por scripts/generate-fictitious-feed.py. Não representa nenhuma marca real. -->
+<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+  <channel>
+    <title>Marca Fictícia (dados de teste)</title>
+    <link>https://loja-ficticia.example</link>
+    <description>Catálogo fictício para desenvolvimento</description>
+    <item>
+      <g:id>FIC-001-PP</g:id>
+      <g:item_group_id>FIC-001</g:item_group_id>
+      <title>Vestido Midi Floral - PP</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Midi Floral na cor rosa.</description>
+      <link>https://loja-ficticia.example/vestido-midi-floral/p?sku=FIC-001-PP</link>
+      <g:image_link>/ficticio/vestido-midi-floral.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>out of stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Rosa</g:color>
+      <g:size>PP</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-001-P</g:id>
+      <g:item_group_id>FIC-001</g:item_group_id>
+      <title>Vestido Midi Floral - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Midi Floral na cor rosa.</description>
+      <link>https://loja-ficticia.example/vestido-midi-floral/p?sku=FIC-001-P</link>
+      <g:image_link>/ficticio/vestido-midi-floral.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Rosa</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-001-M</g:id>
+      <g:item_group_id>FIC-001</g:item_group_id>
+      <title>Vestido Midi Floral - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Midi Floral na cor rosa.</description>
+      <link>https://loja-ficticia.example/vestido-midi-floral/p?sku=FIC-001-M</link>
+      <g:image_link>/ficticio/vestido-midi-floral.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Rosa</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-001-G</g:id>
+      <g:item_group_id>FIC-001</g:item_group_id>
+      <title>Vestido Midi Floral - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Midi Floral na cor rosa.</description>
+      <link>https://loja-ficticia.example/vestido-midi-floral/p?sku=FIC-001-G</link>
+      <g:image_link>/ficticio/vestido-midi-floral.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Rosa</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-002-P</g:id>
+      <g:item_group_id>FIC-002</g:item_group_id>
+      <title>Vestido Longo Linho - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Longo Linho na cor areia.</description>
+      <link>https://loja-ficticia.example/vestido-longo-linho/p?sku=FIC-002-P</link>
+      <g:image_link>/ficticio/vestido-longo-linho.svg</g:image_link>
+      <g:price>329.90 BRL</g:price>
+      <g:sale_price>279.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Areia</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-002-M</g:id>
+      <g:item_group_id>FIC-002</g:item_group_id>
+      <title>Vestido Longo Linho - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Longo Linho na cor areia.</description>
+      <link>https://loja-ficticia.example/vestido-longo-linho/p?sku=FIC-002-M</link>
+      <g:image_link>/ficticio/vestido-longo-linho.svg</g:image_link>
+      <g:price>329.90 BRL</g:price>
+      <g:sale_price>279.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Areia</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-002-G</g:id>
+      <g:item_group_id>FIC-002</g:item_group_id>
+      <title>Vestido Longo Linho - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Longo Linho na cor areia.</description>
+      <link>https://loja-ficticia.example/vestido-longo-linho/p?sku=FIC-002-G</link>
+      <g:image_link>/ficticio/vestido-longo-linho.svg</g:image_link>
+      <g:price>329.90 BRL</g:price>
+      <g:sale_price>279.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Areia</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-003-P</g:id>
+      <g:item_group_id>FIC-003</g:item_group_id>
+      <title>Vestido Curto Tricô - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Curto Tricô na cor preto.</description>
+      <link>https://loja-ficticia.example/vestido-curto-trico/p?sku=FIC-003-P</link>
+      <g:image_link>/ficticio/vestido-curto-trico.svg</g:image_link>
+      <g:price>199.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-003-M</g:id>
+      <g:item_group_id>FIC-003</g:item_group_id>
+      <title>Vestido Curto Tricô - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Curto Tricô na cor preto.</description>
+      <link>https://loja-ficticia.example/vestido-curto-trico/p?sku=FIC-003-M</link>
+      <g:image_link>/ficticio/vestido-curto-trico.svg</g:image_link>
+      <g:price>199.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-003-G</g:id>
+      <g:item_group_id>FIC-003</g:item_group_id>
+      <title>Vestido Curto Tricô - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Curto Tricô na cor preto.</description>
+      <link>https://loja-ficticia.example/vestido-curto-trico/p?sku=FIC-003-G</link>
+      <g:image_link>/ficticio/vestido-curto-trico.svg</g:image_link>
+      <g:price>199.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-003-GG</g:id>
+      <g:item_group_id>FIC-003</g:item_group_id>
+      <title>Vestido Curto Tricô - GG</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Vestido Curto Tricô na cor preto.</description>
+      <link>https://loja-ficticia.example/vestido-curto-trico/p?sku=FIC-003-GG</link>
+      <g:image_link>/ficticio/vestido-curto-trico.svg</g:image_link>
+      <g:price>199.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Vestidos</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>GG</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-004-P</g:id>
+      <g:item_group_id>FIC-004</g:item_group_id>
+      <title>Blusa Seda Decote V - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Blusa Seda Decote V na cor off-white.</description>
+      <link>https://loja-ficticia.example/blusa-seda-decote-v/p?sku=FIC-004-P</link>
+      <g:image_link>/ficticio/blusa-seda-decote-v.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Off-white</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-004-M</g:id>
+      <g:item_group_id>FIC-004</g:item_group_id>
+      <title>Blusa Seda Decote V - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Blusa Seda Decote V na cor off-white.</description>
+      <link>https://loja-ficticia.example/blusa-seda-decote-v/p?sku=FIC-004-M</link>
+      <g:image_link>/ficticio/blusa-seda-decote-v.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Off-white</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-004-G</g:id>
+      <g:item_group_id>FIC-004</g:item_group_id>
+      <title>Blusa Seda Decote V - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Blusa Seda Decote V na cor off-white.</description>
+      <link>https://loja-ficticia.example/blusa-seda-decote-v/p?sku=FIC-004-G</link>
+      <g:image_link>/ficticio/blusa-seda-decote-v.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Off-white</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-005-P</g:id>
+      <g:item_group_id>FIC-005</g:item_group_id>
+      <title>Camisa Oversized Listrada - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Camisa Oversized Listrada na cor azul.</description>
+      <link>https://loja-ficticia.example/camisa-oversized-listrada/p?sku=FIC-005-P</link>
+      <g:image_link>/ficticio/camisa-oversized-listrada.svg</g:image_link>
+      <g:price>179.90 BRL</g:price>
+      <g:sale_price>139.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Azul</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-005-M</g:id>
+      <g:item_group_id>FIC-005</g:item_group_id>
+      <title>Camisa Oversized Listrada - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Camisa Oversized Listrada na cor azul.</description>
+      <link>https://loja-ficticia.example/camisa-oversized-listrada/p?sku=FIC-005-M</link>
+      <g:image_link>/ficticio/camisa-oversized-listrada.svg</g:image_link>
+      <g:price>179.90 BRL</g:price>
+      <g:sale_price>139.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Azul</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-005-G</g:id>
+      <g:item_group_id>FIC-005</g:item_group_id>
+      <title>Camisa Oversized Listrada - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Camisa Oversized Listrada na cor azul.</description>
+      <link>https://loja-ficticia.example/camisa-oversized-listrada/p?sku=FIC-005-G</link>
+      <g:image_link>/ficticio/camisa-oversized-listrada.svg</g:image_link>
+      <g:price>179.90 BRL</g:price>
+      <g:sale_price>139.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Azul</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-006-PP</g:id>
+      <g:item_group_id>FIC-006</g:item_group_id>
+      <title>Regata Canelada - PP</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Regata Canelada na cor verde.</description>
+      <link>https://loja-ficticia.example/regata-canelada/p?sku=FIC-006-PP</link>
+      <g:image_link>/ficticio/regata-canelada.svg</g:image_link>
+      <g:price>79.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde</g:color>
+      <g:size>PP</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-006-P</g:id>
+      <g:item_group_id>FIC-006</g:item_group_id>
+      <title>Regata Canelada - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Regata Canelada na cor verde.</description>
+      <link>https://loja-ficticia.example/regata-canelada/p?sku=FIC-006-P</link>
+      <g:image_link>/ficticio/regata-canelada.svg</g:image_link>
+      <g:price>79.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-006-M</g:id>
+      <g:item_group_id>FIC-006</g:item_group_id>
+      <title>Regata Canelada - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Regata Canelada na cor verde.</description>
+      <link>https://loja-ficticia.example/regata-canelada/p?sku=FIC-006-M</link>
+      <g:image_link>/ficticio/regata-canelada.svg</g:image_link>
+      <g:price>79.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-006-G</g:id>
+      <g:item_group_id>FIC-006</g:item_group_id>
+      <title>Regata Canelada - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Regata Canelada na cor verde.</description>
+      <link>https://loja-ficticia.example/regata-canelada/p?sku=FIC-006-G</link>
+      <g:image_link>/ficticio/regata-canelada.svg</g:image_link>
+      <g:price>79.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-007-P</g:id>
+      <g:item_group_id>FIC-007</g:item_group_id>
+      <title>Cropped Ombro a Ombro - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Cropped Ombro a Ombro na cor terracota.</description>
+      <link>https://loja-ficticia.example/cropped-ombro-a-ombro/p?sku=FIC-007-P</link>
+      <g:image_link>/ficticio/cropped-ombro-a-ombro.svg</g:image_link>
+      <g:price>99.90 BRL</g:price>
+      <g:availability>out of stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Terracota</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-007-M</g:id>
+      <g:item_group_id>FIC-007</g:item_group_id>
+      <title>Cropped Ombro a Ombro - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Cropped Ombro a Ombro na cor terracota.</description>
+      <link>https://loja-ficticia.example/cropped-ombro-a-ombro/p?sku=FIC-007-M</link>
+      <g:image_link>/ficticio/cropped-ombro-a-ombro.svg</g:image_link>
+      <g:price>99.90 BRL</g:price>
+      <g:availability>out of stock</g:availability>
+      <g:product_type>Feminino &gt; Blusas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Terracota</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-008-36</g:id>
+      <g:item_group_id>FIC-008</g:item_group_id>
+      <title>Calça Pantalona Alfaiataria - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Pantalona Alfaiataria na cor caramelo.</description>
+      <link>https://loja-ficticia.example/calca-pantalona-alfaiataria/p?sku=FIC-008-36</link>
+      <g:image_link>/ficticio/calca-pantalona-alfaiataria.svg</g:image_link>
+      <g:price>289.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Caramelo</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-008-38</g:id>
+      <g:item_group_id>FIC-008</g:item_group_id>
+      <title>Calça Pantalona Alfaiataria - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Pantalona Alfaiataria na cor caramelo.</description>
+      <link>https://loja-ficticia.example/calca-pantalona-alfaiataria/p?sku=FIC-008-38</link>
+      <g:image_link>/ficticio/calca-pantalona-alfaiataria.svg</g:image_link>
+      <g:price>289.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Caramelo</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-008-40</g:id>
+      <g:item_group_id>FIC-008</g:item_group_id>
+      <title>Calça Pantalona Alfaiataria - 40</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Pantalona Alfaiataria na cor caramelo.</description>
+      <link>https://loja-ficticia.example/calca-pantalona-alfaiataria/p?sku=FIC-008-40</link>
+      <g:image_link>/ficticio/calca-pantalona-alfaiataria.svg</g:image_link>
+      <g:price>289.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Caramelo</g:color>
+      <g:size>40</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-008-42</g:id>
+      <g:item_group_id>FIC-008</g:item_group_id>
+      <title>Calça Pantalona Alfaiataria - 42</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Pantalona Alfaiataria na cor caramelo.</description>
+      <link>https://loja-ficticia.example/calca-pantalona-alfaiataria/p?sku=FIC-008-42</link>
+      <g:image_link>/ficticio/calca-pantalona-alfaiataria.svg</g:image_link>
+      <g:price>289.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Caramelo</g:color>
+      <g:size>42</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-008-44</g:id>
+      <g:item_group_id>FIC-008</g:item_group_id>
+      <title>Calça Pantalona Alfaiataria - 44</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Pantalona Alfaiataria na cor caramelo.</description>
+      <link>https://loja-ficticia.example/calca-pantalona-alfaiataria/p?sku=FIC-008-44</link>
+      <g:image_link>/ficticio/calca-pantalona-alfaiataria.svg</g:image_link>
+      <g:price>289.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Caramelo</g:color>
+      <g:size>44</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-009-36</g:id>
+      <g:item_group_id>FIC-009</g:item_group_id>
+      <title>Calça Jeans Reta - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Jeans Reta na cor jeans.</description>
+      <link>https://loja-ficticia.example/calca-jeans-reta/p?sku=FIC-009-36</link>
+      <g:image_link>/ficticio/calca-jeans-reta.svg</g:image_link>
+      <g:price>239.90 BRL</g:price>
+      <g:sale_price>199.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-009-38</g:id>
+      <g:item_group_id>FIC-009</g:item_group_id>
+      <title>Calça Jeans Reta - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Jeans Reta na cor jeans.</description>
+      <link>https://loja-ficticia.example/calca-jeans-reta/p?sku=FIC-009-38</link>
+      <g:image_link>/ficticio/calca-jeans-reta.svg</g:image_link>
+      <g:price>239.90 BRL</g:price>
+      <g:sale_price>199.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-009-40</g:id>
+      <g:item_group_id>FIC-009</g:item_group_id>
+      <title>Calça Jeans Reta - 40</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Jeans Reta na cor jeans.</description>
+      <link>https://loja-ficticia.example/calca-jeans-reta/p?sku=FIC-009-40</link>
+      <g:image_link>/ficticio/calca-jeans-reta.svg</g:image_link>
+      <g:price>239.90 BRL</g:price>
+      <g:sale_price>199.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>40</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-009-42</g:id>
+      <g:item_group_id>FIC-009</g:item_group_id>
+      <title>Calça Jeans Reta - 42</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Jeans Reta na cor jeans.</description>
+      <link>https://loja-ficticia.example/calca-jeans-reta/p?sku=FIC-009-42</link>
+      <g:image_link>/ficticio/calca-jeans-reta.svg</g:image_link>
+      <g:price>239.90 BRL</g:price>
+      <g:sale_price>199.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>42</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-010-36</g:id>
+      <g:item_group_id>FIC-010</g:item_group_id>
+      <title>Calça Wide Leg Linho - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Wide Leg Linho na cor branco.</description>
+      <link>https://loja-ficticia.example/calca-wide-leg-linho/p?sku=FIC-010-36</link>
+      <g:image_link>/ficticio/calca-wide-leg-linho.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-010-38</g:id>
+      <g:item_group_id>FIC-010</g:item_group_id>
+      <title>Calça Wide Leg Linho - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Wide Leg Linho na cor branco.</description>
+      <link>https://loja-ficticia.example/calca-wide-leg-linho/p?sku=FIC-010-38</link>
+      <g:image_link>/ficticio/calca-wide-leg-linho.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-010-40</g:id>
+      <g:item_group_id>FIC-010</g:item_group_id>
+      <title>Calça Wide Leg Linho - 40</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Calça Wide Leg Linho na cor branco.</description>
+      <link>https://loja-ficticia.example/calca-wide-leg-linho/p?sku=FIC-010-40</link>
+      <g:image_link>/ficticio/calca-wide-leg-linho.svg</g:image_link>
+      <g:price>259.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calças</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>40</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-011-P</g:id>
+      <g:item_group_id>FIC-011</g:item_group_id>
+      <title>Saia Midi Plissada - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Saia Midi Plissada na cor lilás.</description>
+      <link>https://loja-ficticia.example/saia-midi-plissada/p?sku=FIC-011-P</link>
+      <g:image_link>/ficticio/saia-midi-plissada.svg</g:image_link>
+      <g:price>189.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Saias</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Lilás</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-011-M</g:id>
+      <g:item_group_id>FIC-011</g:item_group_id>
+      <title>Saia Midi Plissada - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Saia Midi Plissada na cor lilás.</description>
+      <link>https://loja-ficticia.example/saia-midi-plissada/p?sku=FIC-011-M</link>
+      <g:image_link>/ficticio/saia-midi-plissada.svg</g:image_link>
+      <g:price>189.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Saias</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Lilás</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-011-G</g:id>
+      <g:item_group_id>FIC-011</g:item_group_id>
+      <title>Saia Midi Plissada - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Saia Midi Plissada na cor lilás.</description>
+      <link>https://loja-ficticia.example/saia-midi-plissada/p?sku=FIC-011-G</link>
+      <g:image_link>/ficticio/saia-midi-plissada.svg</g:image_link>
+      <g:price>189.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Saias</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Lilás</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-012-36</g:id>
+      <g:item_group_id>FIC-012</g:item_group_id>
+      <title>Saia Jeans Curta - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Saia Jeans Curta na cor jeans claro.</description>
+      <link>https://loja-ficticia.example/saia-jeans-curta/p?sku=FIC-012-36</link>
+      <g:image_link>/ficticio/saia-jeans-curta.svg</g:image_link>
+      <g:price>159.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Saias</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans claro</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-012-38</g:id>
+      <g:item_group_id>FIC-012</g:item_group_id>
+      <title>Saia Jeans Curta - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Saia Jeans Curta na cor jeans claro.</description>
+      <link>https://loja-ficticia.example/saia-jeans-curta/p?sku=FIC-012-38</link>
+      <g:image_link>/ficticio/saia-jeans-curta.svg</g:image_link>
+      <g:price>159.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Saias</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans claro</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-012-40</g:id>
+      <g:item_group_id>FIC-012</g:item_group_id>
+      <title>Saia Jeans Curta - 40</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Saia Jeans Curta na cor jeans claro.</description>
+      <link>https://loja-ficticia.example/saia-jeans-curta/p?sku=FIC-012-40</link>
+      <g:image_link>/ficticio/saia-jeans-curta.svg</g:image_link>
+      <g:price>159.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Saias</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans claro</g:color>
+      <g:size>40</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-013-36</g:id>
+      <g:item_group_id>FIC-013</g:item_group_id>
+      <title>Short Alfaiataria - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Short Alfaiataria na cor bege.</description>
+      <link>https://loja-ficticia.example/short-alfaiataria/p?sku=FIC-013-36</link>
+      <g:image_link>/ficticio/short-alfaiataria.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Shorts</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Bege</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-013-38</g:id>
+      <g:item_group_id>FIC-013</g:item_group_id>
+      <title>Short Alfaiataria - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Short Alfaiataria na cor bege.</description>
+      <link>https://loja-ficticia.example/short-alfaiataria/p?sku=FIC-013-38</link>
+      <g:image_link>/ficticio/short-alfaiataria.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Shorts</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Bege</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-013-40</g:id>
+      <g:item_group_id>FIC-013</g:item_group_id>
+      <title>Short Alfaiataria - 40</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Short Alfaiataria na cor bege.</description>
+      <link>https://loja-ficticia.example/short-alfaiataria/p?sku=FIC-013-40</link>
+      <g:image_link>/ficticio/short-alfaiataria.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Shorts</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Bege</g:color>
+      <g:size>40</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-013-42</g:id>
+      <g:item_group_id>FIC-013</g:item_group_id>
+      <title>Short Alfaiataria - 42</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Short Alfaiataria na cor bege.</description>
+      <link>https://loja-ficticia.example/short-alfaiataria/p?sku=FIC-013-42</link>
+      <g:image_link>/ficticio/short-alfaiataria.svg</g:image_link>
+      <g:price>149.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Shorts</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Bege</g:color>
+      <g:size>42</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-014-P</g:id>
+      <g:item_group_id>FIC-014</g:item_group_id>
+      <title>Macacão Pantacourt - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Macacão Pantacourt na cor verde oliva.</description>
+      <link>https://loja-ficticia.example/macacao-pantacourt/p?sku=FIC-014-P</link>
+      <g:image_link>/ficticio/macacao-pantacourt.svg</g:image_link>
+      <g:price>319.90 BRL</g:price>
+      <g:sale_price>269.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Macacões</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde oliva</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-014-M</g:id>
+      <g:item_group_id>FIC-014</g:item_group_id>
+      <title>Macacão Pantacourt - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Macacão Pantacourt na cor verde oliva.</description>
+      <link>https://loja-ficticia.example/macacao-pantacourt/p?sku=FIC-014-M</link>
+      <g:image_link>/ficticio/macacao-pantacourt.svg</g:image_link>
+      <g:price>319.90 BRL</g:price>
+      <g:sale_price>269.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Macacões</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde oliva</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-014-G</g:id>
+      <g:item_group_id>FIC-014</g:item_group_id>
+      <title>Macacão Pantacourt - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Macacão Pantacourt na cor verde oliva.</description>
+      <link>https://loja-ficticia.example/macacao-pantacourt/p?sku=FIC-014-G</link>
+      <g:image_link>/ficticio/macacao-pantacourt.svg</g:image_link>
+      <g:price>319.90 BRL</g:price>
+      <g:sale_price>269.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Macacões</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Verde oliva</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-015-P</g:id>
+      <g:item_group_id>FIC-015</g:item_group_id>
+      <title>Jaqueta Jeans Cropped - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Jaqueta Jeans Cropped na cor jeans.</description>
+      <link>https://loja-ficticia.example/jaqueta-jeans-cropped/p?sku=FIC-015-P</link>
+      <g:image_link>/ficticio/jaqueta-jeans-cropped.svg</g:image_link>
+      <g:price>279.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Jaquetas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-015-M</g:id>
+      <g:item_group_id>FIC-015</g:item_group_id>
+      <title>Jaqueta Jeans Cropped - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Jaqueta Jeans Cropped na cor jeans.</description>
+      <link>https://loja-ficticia.example/jaqueta-jeans-cropped/p?sku=FIC-015-M</link>
+      <g:image_link>/ficticio/jaqueta-jeans-cropped.svg</g:image_link>
+      <g:price>279.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Jaquetas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-015-G</g:id>
+      <g:item_group_id>FIC-015</g:item_group_id>
+      <title>Jaqueta Jeans Cropped - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Jaqueta Jeans Cropped na cor jeans.</description>
+      <link>https://loja-ficticia.example/jaqueta-jeans-cropped/p?sku=FIC-015-G</link>
+      <g:image_link>/ficticio/jaqueta-jeans-cropped.svg</g:image_link>
+      <g:price>279.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Jaquetas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Jeans</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-016-P</g:id>
+      <g:item_group_id>FIC-016</g:item_group_id>
+      <title>Blazer Linho Estruturado - P</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Blazer Linho Estruturado na cor off-white.</description>
+      <link>https://loja-ficticia.example/blazer-linho-estruturado/p?sku=FIC-016-P</link>
+      <g:image_link>/ficticio/blazer-linho-estruturado.svg</g:image_link>
+      <g:price>399.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Jaquetas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Off-white</g:color>
+      <g:size>P</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-016-M</g:id>
+      <g:item_group_id>FIC-016</g:item_group_id>
+      <title>Blazer Linho Estruturado - M</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Blazer Linho Estruturado na cor off-white.</description>
+      <link>https://loja-ficticia.example/blazer-linho-estruturado/p?sku=FIC-016-M</link>
+      <g:image_link>/ficticio/blazer-linho-estruturado.svg</g:image_link>
+      <g:price>399.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Jaquetas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Off-white</g:color>
+      <g:size>M</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-016-G</g:id>
+      <g:item_group_id>FIC-016</g:item_group_id>
+      <title>Blazer Linho Estruturado - G</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Blazer Linho Estruturado na cor off-white.</description>
+      <link>https://loja-ficticia.example/blazer-linho-estruturado/p?sku=FIC-016-G</link>
+      <g:image_link>/ficticio/blazer-linho-estruturado.svg</g:image_link>
+      <g:price>399.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Jaquetas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Off-white</g:color>
+      <g:size>G</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-017</g:id>
+      <g:item_group_id>FIC-017</g:item_group_id>
+      <title>Bolsa Tiracolo Couro</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Bolsa Tiracolo Couro na cor caramelo.</description>
+      <link>https://loja-ficticia.example/bolsa-tiracolo-couro/p?sku=FIC-017</link>
+      <g:image_link>/ficticio/bolsa-tiracolo-couro.svg</g:image_link>
+      <g:price>349.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Bolsas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Caramelo</g:color>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-018</g:id>
+      <g:item_group_id>FIC-018</g:item_group_id>
+      <title>Bolsa de Palha</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Bolsa de Palha na cor natural.</description>
+      <link>https://loja-ficticia.example/bolsa-de-palha/p?sku=FIC-018</link>
+      <g:image_link>/ficticio/bolsa-de-palha.svg</g:image_link>
+      <g:price>189.90 BRL</g:price>
+      <g:sale_price>149.90 BRL</g:sale_price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Bolsas</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Natural</g:color>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-019-34</g:id>
+      <g:item_group_id>FIC-019</g:item_group_id>
+      <title>Sandália Tiras Finas - 34</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Sandália Tiras Finas na cor nude.</description>
+      <link>https://loja-ficticia.example/sandalia-tiras-finas/p?sku=FIC-019-34</link>
+      <g:image_link>/ficticio/sandalia-tiras-finas.svg</g:image_link>
+      <g:price>219.90 BRL</g:price>
+      <g:availability>out of stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Nude</g:color>
+      <g:size>34</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-019-35</g:id>
+      <g:item_group_id>FIC-019</g:item_group_id>
+      <title>Sandália Tiras Finas - 35</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Sandália Tiras Finas na cor nude.</description>
+      <link>https://loja-ficticia.example/sandalia-tiras-finas/p?sku=FIC-019-35</link>
+      <g:image_link>/ficticio/sandalia-tiras-finas.svg</g:image_link>
+      <g:price>219.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Nude</g:color>
+      <g:size>35</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-019-36</g:id>
+      <g:item_group_id>FIC-019</g:item_group_id>
+      <title>Sandália Tiras Finas - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Sandália Tiras Finas na cor nude.</description>
+      <link>https://loja-ficticia.example/sandalia-tiras-finas/p?sku=FIC-019-36</link>
+      <g:image_link>/ficticio/sandalia-tiras-finas.svg</g:image_link>
+      <g:price>219.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Nude</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-019-37</g:id>
+      <g:item_group_id>FIC-019</g:item_group_id>
+      <title>Sandália Tiras Finas - 37</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Sandália Tiras Finas na cor nude.</description>
+      <link>https://loja-ficticia.example/sandalia-tiras-finas/p?sku=FIC-019-37</link>
+      <g:image_link>/ficticio/sandalia-tiras-finas.svg</g:image_link>
+      <g:price>219.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Nude</g:color>
+      <g:size>37</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-019-38</g:id>
+      <g:item_group_id>FIC-019</g:item_group_id>
+      <title>Sandália Tiras Finas - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Sandália Tiras Finas na cor nude.</description>
+      <link>https://loja-ficticia.example/sandalia-tiras-finas/p?sku=FIC-019-38</link>
+      <g:image_link>/ficticio/sandalia-tiras-finas.svg</g:image_link>
+      <g:price>219.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Nude</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-019-39</g:id>
+      <g:item_group_id>FIC-019</g:item_group_id>
+      <title>Sandália Tiras Finas - 39</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Sandália Tiras Finas na cor nude.</description>
+      <link>https://loja-ficticia.example/sandalia-tiras-finas/p?sku=FIC-019-39</link>
+      <g:image_link>/ficticio/sandalia-tiras-finas.svg</g:image_link>
+      <g:price>219.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Nude</g:color>
+      <g:size>39</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-020-34</g:id>
+      <g:item_group_id>FIC-020</g:item_group_id>
+      <title>Tênis Branco Couro - 34</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Tênis Branco Couro na cor branco.</description>
+      <link>https://loja-ficticia.example/tenis-branco-couro/p?sku=FIC-020-34</link>
+      <g:image_link>/ficticio/tenis-branco-couro.svg</g:image_link>
+      <g:price>299.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>34</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-020-35</g:id>
+      <g:item_group_id>FIC-020</g:item_group_id>
+      <title>Tênis Branco Couro - 35</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Tênis Branco Couro na cor branco.</description>
+      <link>https://loja-ficticia.example/tenis-branco-couro/p?sku=FIC-020-35</link>
+      <g:image_link>/ficticio/tenis-branco-couro.svg</g:image_link>
+      <g:price>299.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>35</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-020-36</g:id>
+      <g:item_group_id>FIC-020</g:item_group_id>
+      <title>Tênis Branco Couro - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Tênis Branco Couro na cor branco.</description>
+      <link>https://loja-ficticia.example/tenis-branco-couro/p?sku=FIC-020-36</link>
+      <g:image_link>/ficticio/tenis-branco-couro.svg</g:image_link>
+      <g:price>299.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-020-37</g:id>
+      <g:item_group_id>FIC-020</g:item_group_id>
+      <title>Tênis Branco Couro - 37</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Tênis Branco Couro na cor branco.</description>
+      <link>https://loja-ficticia.example/tenis-branco-couro/p?sku=FIC-020-37</link>
+      <g:image_link>/ficticio/tenis-branco-couro.svg</g:image_link>
+      <g:price>299.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>37</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-020-38</g:id>
+      <g:item_group_id>FIC-020</g:item_group_id>
+      <title>Tênis Branco Couro - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Tênis Branco Couro na cor branco.</description>
+      <link>https://loja-ficticia.example/tenis-branco-couro/p?sku=FIC-020-38</link>
+      <g:image_link>/ficticio/tenis-branco-couro.svg</g:image_link>
+      <g:price>299.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-020-39</g:id>
+      <g:item_group_id>FIC-020</g:item_group_id>
+      <title>Tênis Branco Couro - 39</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Tênis Branco Couro na cor branco.</description>
+      <link>https://loja-ficticia.example/tenis-branco-couro/p?sku=FIC-020-39</link>
+      <g:image_link>/ficticio/tenis-branco-couro.svg</g:image_link>
+      <g:price>299.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Branco</g:color>
+      <g:size>39</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-021-35</g:id>
+      <g:item_group_id>FIC-021</g:item_group_id>
+      <title>Mule Bico Quadrado - 35</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Mule Bico Quadrado na cor preto.</description>
+      <link>https://loja-ficticia.example/mule-bico-quadrado/p?sku=FIC-021-35</link>
+      <g:image_link>/ficticio/mule-bico-quadrado.svg</g:image_link>
+      <g:price>249.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>35</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-021-36</g:id>
+      <g:item_group_id>FIC-021</g:item_group_id>
+      <title>Mule Bico Quadrado - 36</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Mule Bico Quadrado na cor preto.</description>
+      <link>https://loja-ficticia.example/mule-bico-quadrado/p?sku=FIC-021-36</link>
+      <g:image_link>/ficticio/mule-bico-quadrado.svg</g:image_link>
+      <g:price>249.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>36</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-021-37</g:id>
+      <g:item_group_id>FIC-021</g:item_group_id>
+      <title>Mule Bico Quadrado - 37</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Mule Bico Quadrado na cor preto.</description>
+      <link>https://loja-ficticia.example/mule-bico-quadrado/p?sku=FIC-021-37</link>
+      <g:image_link>/ficticio/mule-bico-quadrado.svg</g:image_link>
+      <g:price>249.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>37</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-021-38</g:id>
+      <g:item_group_id>FIC-021</g:item_group_id>
+      <title>Mule Bico Quadrado - 38</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Mule Bico Quadrado na cor preto.</description>
+      <link>https://loja-ficticia.example/mule-bico-quadrado/p?sku=FIC-021-38</link>
+      <g:image_link>/ficticio/mule-bico-quadrado.svg</g:image_link>
+      <g:price>249.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Calçados</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Preto</g:color>
+      <g:size>38</g:size>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-022</g:id>
+      <g:item_group_id>FIC-022</g:item_group_id>
+      <title>Óculos de Sol Gatinho</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Óculos de Sol Gatinho na cor tartaruga.</description>
+      <link>https://loja-ficticia.example/oculos-de-sol-gatinho/p?sku=FIC-022</link>
+      <g:image_link>/ficticio/oculos-de-sol-gatinho.svg</g:image_link>
+      <g:price>189.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Acessórios</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Tartaruga</g:color>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-023</g:id>
+      <g:item_group_id>FIC-023</g:item_group_id>
+      <title>Brinco Argola Dourada</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Brinco Argola Dourada na cor dourado.</description>
+      <link>https://loja-ficticia.example/brinco-argola-dourada/p?sku=FIC-023</link>
+      <g:image_link>/ficticio/brinco-argola-dourada.svg</g:image_link>
+      <g:price>89.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Acessórios</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Dourado</g:color>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+    <item>
+      <g:id>FIC-024</g:id>
+      <g:item_group_id>FIC-024</g:item_group_id>
+      <title>Lenço de Seda Estampado</title>
+      <description>Produto FICTÍCIO para testes e demonstração. Lenço de Seda Estampado na cor estampado.</description>
+      <link>https://loja-ficticia.example/lenco-de-seda-estampado/p?sku=FIC-024</link>
+      <g:image_link>/ficticio/lenco-de-seda-estampado.svg</g:image_link>
+      <g:price>119.90 BRL</g:price>
+      <g:availability>in stock</g:availability>
+      <g:product_type>Feminino &gt; Acessórios</g:product_type>
+      <g:brand>Marca Fictícia</g:brand>
+      <g:color>Estampado</g:color>
+      <g:gender>female</g:gender>
+      <g:condition>new</g:condition>
+    </item>
+  </channel>
+</rss>

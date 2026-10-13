@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="600" height="800">
+<rect width="600" height="800" fill="#f4efe9"/>
+<g fill="#cdb797" stroke="#cdb797" stroke-linejoin="round"><path d="M200 240 L400 240 L430 480 L320 480 L300 380 L280 480 L170 480 Z"/></g>
+<g fill="none" stroke="#00000022"><path d="M200 240 L400 240 L430 480 L320 480 L300 380 L280 480 L170 480 Z"/></g>
+<text x="300" y="730" text-anchor="middle" font-family="sans-serif" font-size="26" fill="#6b6560">Short Alfaiataria</text>
+<text x="300" y="765" text-anchor="middle" font-family="sans-serif" font-size="18" letter-spacing="3" fill="#b4475a">PRODUTO FICTÍCIO</text>
+</svg>

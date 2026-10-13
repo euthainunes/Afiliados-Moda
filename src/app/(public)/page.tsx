@@ -1,5 +1,9 @@
+import { LookCard } from "@/components/looks/look-card";
 import { ButtonLink } from "@/components/ui/button";
 import { site } from "@/config/site";
+import { listPublishedLooks } from "@/modules/looks/service";
+
+export const dynamic = "force-dynamic";
 
 const steps = [
   { title: "Monte", text: "Escolha peças reais de marcas parceiras e combine do seu jeito." },
@@ -7,8 +11,8 @@ const steps = [
   { title: "Ganhe", text: "Quando alguém compra pelo seu look, você acumula recompensas, com regras claras." },
 ];
 
-// Página inicial provisória da Fase 3. O conteúdo final (looks em destaque, marcas) entra na Fase 4.
-export default function HomePage() {
+export default async function HomePage() {
+  const { looks } = await listPublishedLooks({ pageSize: 8 });
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
       <section className="max-w-2xl">
@@ -21,6 +25,21 @@ export default function HomePage() {
           <ButtonLink href="/entrar" variant="secondary">Já tenho conta</ButtonLink>
         </div>
       </section>
+      {looks.length > 0 && (
+        <section aria-labelledby="recentes" className="mt-20">
+          <div className="flex items-baseline justify-between">
+            <h2 id="recentes" className="font-display text-2xl font-semibold">Looks recentes</h2>
+            <ButtonLink href="/looks" variant="ghost" size="sm">Ver todos</ButtonLink>
+          </div>
+          <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-4">
+            {looks.map(({ look, creator, items }) => (
+              <li key={look.id}>
+                <LookCard slug={look.slug!} title={look.title} creator={creator} items={items} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <section aria-labelledby="como-funciona" className="mt-20">
         <h2 id="como-funciona" className="font-display text-2xl font-semibold">Como funciona</h2>
         <ol className="mt-6 grid gap-4 sm:grid-cols-3">

@@ -23,4 +23,26 @@ test("capturas", async ({ page }, info) => {
   await page.screenshot({ path: `${dir}/admin-usuarias.png`, fullPage: true });
   await page.goto("/app/configuracoes");
   await page.screenshot({ path: `${dir}/configuracoes.png`, fullPage: true });
+
+  // Telas da Fase 4 (dependem do catálogo importado em looks.spec.ts, que roda antes).
+  await page.goto("/app/catalogo");
+  await page.screenshot({ path: `${dir}/catalogo.png`, fullPage: true });
+  await page.getByRole("link", { name: /Vestido Midi Floral/ }).click();
+  await page.waitForURL(/\/app\/produtos\//);
+  await page.screenshot({ path: `${dir}/produto.png`, fullPage: true });
+  await page.getByRole("button", { name: "Adicionar ao look" }).click();
+  await page.waitForURL(/\/app\/looks\/[0-9a-f-]{36}$/);
+  await page.getByRole("searchbox", { name: "Buscar peças" }).fill("sandalia");
+  await page.getByRole("button", { name: /Adicionar Sandália/ }).click();
+  await page.getByRole("button", { name: /Remover Sandália/ }).waitFor();
+  await page.screenshot({ path: `${dir}/montador.png`, fullPage: true });
+  await page.goto("/looks");
+  await page.screenshot({ path: `${dir}/descobrir.png`, fullPage: true });
+  await page.locator("main ul li a").first().click();
+  await page.waitForURL(/\/l\//);
+  await page.screenshot({ path: `${dir}/look-publico.png`, fullPage: true });
+  const og = await page.locator('meta[property="og:image"]').getAttribute("content");
+  const img = await page.request.get(new URL(og!).pathname);
+  const { writeFile } = await import("node:fs/promises");
+  await writeFile(`${dir}/og-image.png`, await img.body());
 });

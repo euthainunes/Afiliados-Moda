@@ -8,11 +8,14 @@ export type NavItem = { href: string; label: string };
 // Estrutura comum à área da usuária e ao painel. A navegação inferior no celular entra na Fase 4 com o montador.
 export function AppShell({
   nav,
+  mobileNav,
   userName,
   area,
   children,
 }: {
   nav: NavItem[];
+  // Navegação inferior fixa no celular (área da usuária). Quando presente, o menu superior some em telas pequenas.
+  mobileNav?: NavItem[];
   userName: string;
   area?: string;
   children: React.ReactNode;
@@ -25,7 +28,10 @@ export function AppShell({
             {site.name}
           </Link>
           {area && <span className="rounded-full bg-ink px-2.5 py-0.5 text-xs font-medium text-white">{area}</span>}
-          <nav aria-label="Área" className="order-last flex w-full gap-1 overflow-x-auto sm:order-none sm:w-auto">
+          <nav
+            aria-label="Área"
+            className={mobileNav ? "hidden gap-1 sm:flex" : "order-last flex w-full gap-1 overflow-x-auto sm:order-none sm:w-auto"}
+          >
             {nav.map((item) => (
               <Link key={item.href} href={item.href} className={buttonClasses("ghost", "sm")}>
                 {item.label}
@@ -42,9 +48,22 @@ export function AppShell({
           </div>
         </div>
       </header>
-      <main id="conteudo" className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+      <main id="conteudo" className={`mx-auto w-full max-w-6xl flex-1 px-4 py-8 ${mobileNav ? "pb-24 sm:pb-8" : ""}`}>
         {children}
       </main>
+      {mobileNav && (
+        <nav aria-label="Navegação principal" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-surface sm:hidden">
+          <ul className="grid" style={{ gridTemplateColumns: `repeat(${mobileNav.length}, minmax(0, 1fr))` }}>
+            {mobileNav.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href} className="flex h-14 items-center justify-center px-1 text-center text-xs font-medium">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </>
   );
 }

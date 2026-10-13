@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="600" height="800">
+<rect width="600" height="800" fill="#f4efe9"/>
+<g fill="#d8c3a5" stroke="#d8c3a5" stroke-linejoin="round"><path d="M250 170 L350 170 L370 260 L450 640 L150 640 L230 260 Z"/></g>
+<g fill="none" stroke="#00000022"><path d="M250 170 L350 170 L370 260 L450 640 L150 640 L230 260 Z"/></g>
+<text x="300" y="730" text-anchor="middle" font-family="sans-serif" font-size="26" fill="#6b6560">Vestido Longo Linho</text>
+<text x="300" y="765" text-anchor="middle" font-family="sans-serif" font-size="18" letter-spacing="3" fill="#b4475a">PRODUTO FICTÍCIO</text>
+</svg>

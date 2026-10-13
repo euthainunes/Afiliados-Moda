@@ -15,6 +15,13 @@
       "when": 1791908268589,
       "tag": "0001_audit_append_only",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791909294990,
+      "tag": "0002_catalog_looks_tracking",
+      "breakpoints": true
     }
   ]
 }
