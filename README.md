@@ -1,36 +1,40 @@
-# Afiliados-Moda
+# Afiliados Moda (nome provisório)
 
-Plataforma de descoberta de produtos de moda, montagem e compartilhamento de looks, com atribuição de vendas, comissões e recompensas para as usuárias. Primeira marca parceira prevista: Suntime (VTEX).
+Plataforma de looks com peças de marcas parceiras: as criadoras montam e compartilham looks; cada clique para a loja é rastreado; vendas atribuídas geram comissão para a plataforma e recompensa para a criadora, controladas por um livro-razão auditável. Primeira marca prevista: Suntime (VTEX).
 
-## Status
-- **Fase 1 — Descoberta:** concluída (docs 00–07).
-- **Fase 3 — Fundação técnica:** concluída em desenvolvimento (doc 08): Next.js 16 + TypeScript, PostgreSQL/Drizzle, autenticação, papéis e permissões, auditoria, design system inicial e testes. MFA do painel e provedor de e-mail pendentes (Fase 3b).
-- **Fase 4 — Catálogo e looks:** concluída em desenvolvimento com catálogo fictício (doc 09): importação de feed XML, catálogo com busca e filtros, montador, publicação com URL própria e imagem de compartilhamento, redirecionador de cliques e moderação. Atribuição de vendas ainda não comprovada (depende da VTEX).
-- **Fase 5 — Operação:** marcas, campanhas, regras de comissão com aprovação dupla e imutáveis, importação agendada com alertas, indicadores, relatórios/CSV e gestão de equipe (doc 10).
+> **Situação:** plataforma funcional em **modo demonstração** (dados fictícios, nenhuma venda, cobrança ou pagamento real). A estrutura está pronta para receber dados reais por configuração, de forma gradual — ver [docs/12](docs/12-guia-de-integracoes.md) e [docs/14](docs/14-producao-dependencias-e-limitacoes.md).
 
 ## Como rodar
+Requisitos: Node 22, pnpm 10, PostgreSQL 16.
 ```bash
 pnpm install
-cp .env.example .env.local   # ajuste DATABASE_URL e AUTH_SECRET
-pnpm db:migrate && pnpm db:seed
-pnpm dev
+cp .env.example .env.local      # ajuste DATABASE_URL, gere AUTH_SECRET (openssl rand -base64 48) e SEED_PASSWORD
+pnpm db:migrate                 # cria as tabelas
+pnpm db:seed                    # carrega a DEMONSTRAÇÃO (fictícia); recriar tudo: pnpm db:reset
+pnpm dev                        # http://localhost:3000 (links de e-mail aparecem no terminal)
 ```
-Detalhes, testes e decisões em [docs/08](docs/08-fase-3-fundacao.md).
+Contas fictícias (senha = `SEED_PASSWORD`): `admin@exemplo.test` e `admin2@exemplo.test` (administradoras), `operadora@exemplo.test`, `criadora1@exemplo.test` … `criadora5@exemplo.test`.
+
+Qualidade: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e` (os testes usam um banco cujo nome termina em `_test`).
+
+## O que existe
+- **Público:** início, descoberta de looks, página do look com imagem de compartilhamento, perfil, FAQ, contato, termos, privacidade e regulamento (rascunhos).
+- **Conta:** cadastro com consentimentos, confirmação de e-mail, login, recuperação e troca de senha, sessões, perfil, exportação e exclusão de dados (LGPD).
+- **Criadora:** catálogo com busca e filtros, montador de looks, links rastreáveis, desempenho com gráficos, recompensas com extrato, resgate por PIX, notificações, suporte.
+- **Painel:** vendas e conversões, financeiro (posição real × demonstração, faturas das marcas, ajustes com aprovação dupla, livro-razão), resgates, conciliação, usuárias, suporte, marcas/campanhas/regras de comissão versionadas, catálogo, moderação, integrações (demo/real/desligada), relatórios e CSV, equipe, configurações, saúde, auditoria.
+- **Integrações:** contratos e adaptadores para feed de produtos, pedidos VTEX (preparado, não validado), e-mail e pagamentos; troca por configuração; bloqueio de demonstração em produção na aplicação e no banco.
 
 ## Documentação
 | Documento | Conteúdo |
 |---|---|
-| [00 — Adendo técnico (fonte)](docs/00-adendo-tecnico.md) | Documento de referência: modelo comercial, financeiro e VTEX |
-| [01 — Visão de produto](docs/01-visao-de-produto.md) | Proposta de valor, perfis, funcionamento, regras, MVP, evolução |
-| [02 — Arquitetura funcional e sitemap](docs/02-arquitetura-funcional-e-sitemap.md) | Ambientes, páginas, navegação, fluxos, RBAC |
-| [03 — Modelo de dados e integrações](docs/03-modelo-de-dados-e-integracoes.md) | ERD, entidades, restrições, classificação de dados, integrações |
-| [04 — Arquitetura técnica](docs/04-arquitetura-tecnica.md) | Stack, módulos de back-end, front-end, design system, infraestrutura |
-| [05 — Afiliados, financeiro e VTEX](docs/05-afiliados-financeiro-e-vtex.md) | Estados, cálculo, livro-razão, elegibilidade, integração e testes E2E |
-| [06 — Riscos e decisões](docs/06-riscos-e-decisoes.md) | Registro de decisões pendentes e matriz de riscos |
-| [07 — Roadmap](docs/07-roadmap.md) | Fases, entregáveis, critérios de aceite e próximas ações |
-| [08 — Fase 3: fundação técnica](docs/08-fase-3-fundacao.md) | Critérios de aceite, decisões, pendências e como rodar |
-| [09 — Fase 4: catálogo e looks](docs/09-fase-4-catalogo-e-looks.md) | Critérios de aceite, o que não está comprovado, decisões e pendências |
-| [10 — Fase 5: operação](docs/10-fase-5-operacao.md) | Marcas, campanhas, regras de comissão, agendamento, relatórios e equipe |
-| [11 — Plano da plataforma completa](docs/11-plano-plataforma-completa.md) | O que existe, o que falta, modo demonstração seguro, integrações e próximas etapas |
+| [00 — Adendo técnico](docs/00-adendo-tecnico.md) | Fonte das regras comerciais, financeiras e VTEX |
+| [01 — Visão de produto](docs/01-visao-de-produto.md) · [02 — Arquitetura funcional](docs/02-arquitetura-funcional-e-sitemap.md) | Proposta, perfis, sitemap, fluxos, permissões |
+| [03 — Modelo de dados inicial](docs/03-modelo-de-dados-e-integracoes.md) · [04 — Arquitetura técnica](docs/04-arquitetura-tecnica.md) · [05 — Financeiro e VTEX](docs/05-afiliados-financeiro-e-vtex.md) | Especificações |
+| [06 — Riscos e decisões](docs/06-riscos-e-decisoes.md) · [07 — Roadmap](docs/07-roadmap.md) | Decisões pendentes e fases |
+| [08](docs/08-fase-3-fundacao.md) · [09](docs/09-fase-4-catalogo-e-looks.md) · [10](docs/10-fase-5-operacao.md) | Entregas: fundação, catálogo e looks, operação |
+| [11 — Plano da plataforma completa](docs/11-plano-plataforma-completa.md) | Modo demonstração, integrações e etapas |
+| [12 — Guia de integrações](docs/12-guia-de-integracoes.md) | Como conectar cada serviço real |
+| [13 — APIs e modelo de dados](docs/13-api-e-modelo-de-dados.md) · [OpenAPI](docs/api/openapi.yaml) | Rotas, serviços, tabelas e garantias |
+| [14 — Produção, dependências e limitações](docs/14-producao-dependencias-e-limitacoes.md) | Arquitetura atual, checklist de produção, pendências externas, testes |
 
-> Percentuais comerciais (25% / 20 p.p. / 5 p.p.) são premissas sujeitas a contrato e são tratados como configuração, nunca como código.
+> Percentuais comerciais (25% / 20 p.p. / 5 p.p.) são premissas sujeitas a contrato: existem apenas numa regra **fictícia** de demonstração e, para marcas reais, são cadastrados e aprovados no painel.

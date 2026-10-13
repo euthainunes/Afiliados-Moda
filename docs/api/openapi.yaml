@@ -1,0 +1,132 @@
+openapi: 3.1.0
+info:
+  title: Afiliados Moda — rotas HTTP
+  version: "0.6.0"
+  description: |
+    Rotas HTTP expostas pela aplicação. Mutações de tela (formulários) usam Server Actions do Next.js, que não
+    são uma API pública; elas estão descritas em docs/13-api-e-modelo-de-dados.md.
+    Todas as respostas de erro seguem o formato {"error": "mensagem"} quando JSON.
+servers:
+  - url: http://localhost:3000
+    description: Desenvolvimento
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: am_session
+      description: Cookie de sessão HttpOnly (em produção, "__Host-am_session").
+    cron:
+      type: http
+      scheme: bearer
+      description: CRON_SECRET (mínimo de 32 caracteres), usado pelo agendador.
+  schemas:
+    ProductCard:
+      type: object
+      required: [id, title, brandName, brandSlug, brandFictitious, priceCents, currency, inStock]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        brandName: { type: string }
+        brandSlug: { type: string }
+        brandFictitious: { type: boolean }
+        imageUrl: { type: [string, "null"] }
+        priceCents: { type: integer, description: "Preço em centavos" }
+        salePriceCents: { type: [integer, "null"] }
+        currency: { type: string, example: BRL }
+        inStock: { type: boolean }
+    SyncResult:
+      type: object
+      properties:
+        logId: { type: string, format: uuid }
+        status: { type: string, enum: [succeeded, partial, failed] }
+        counters:
+          type: object
+          properties:
+            received: { type: integer }
+            created: { type: integer }
+            updated: { type: integer }
+            unchanged: { type: integer }
+            failed: { type: integer }
+        error: { type: string }
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+paths:
+  /api/produtos:
+    get:
+      summary: Busca no catálogo (usada pelo montador de looks)
+      security: [{ session: [] }]
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 80 }, description: "Busca sem acentos" }
+        - { name: categoria, in: query, schema: { type: string } }
+        - { name: marca, in: query, schema: { type: string } }
+        - { name: min, in: query, schema: { type: integer, minimum: 0 }, description: "Preço mínimo em reais" }
+        - { name: max, in: query, schema: { type: integer, minimum: 0 }, description: "Preço máximo em reais" }
+        - { name: ordem, in: query, schema: { type: string, enum: [relevancia, menor-preco, maior-preco, novidades] } }
+        - { name: pagina, in: query, schema: { type: integer, minimum: 1, maximum: 500 } }
+      responses:
+        "200":
+          description: Até 12 peças disponíveis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: "#/components/schemas/ProductCard" } }
+                  total: { type: integer }
+        "401": { description: Sem sessão, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /r/{code}:
+    get:
+      summary: Redirecionador de cliques
+      description: |
+        Registra o clique (click_id ULID, sem dados pessoais; IP e navegador apenas como HMAC) e redireciona
+        para o produto na loja com os parâmetros configurados para a marca. Robôs e cliques da própria autora
+        são marcados; looks não publicados redirecionam sem registrar clique atribuível.
+      parameters:
+        - { name: code, in: path, required: true, schema: { type: string, pattern: "^[0-9A-Za-z]{10}$" } }
+      responses:
+        "302": { description: "Para o produto (Cache-Control no-store) ou para /looks?link=invalido" }
+  /api/cron/importar-feeds:
+    get:
+      summary: Importa os feeds de produtos das marcas ativas
+      security: [{ cron: [] }]
+      responses:
+        "200": { description: Todos importados }
+        "207": { description: Algum feed falhou (detalhes no corpo) }
+        "401": { description: Segredo ausente ou inválido }
+  /api/cron/sincronizar-pedidos:
+    get:
+      summary: Sincroniza pedidos de todas as fontes ativas
+      security: [{ cron: [] }]
+      responses:
+        "200":
+          description: Resultado por integração
+          content: { application/json: { schema: { type: object, properties: { results: { type: array, items: { $ref: "#/components/schemas/SyncResult" } } } } } }
+        "207": { description: Alguma integração falhou }
+        "401": { description: Não autorizado }
+  /api/cron/rotinas-financeiras:
+    get:
+      summary: Conciliação e liberação de recompensas elegíveis (diária)
+      security: [{ cron: [] }]
+      responses:
+        "200": { description: "Resumo {eligibility, reconciliation}" }
+        "401": { description: Não autorizado }
+  /admin/relatorios/exportar:
+    get:
+      summary: Exporta o relatório de cliques em CSV (auditado)
+      security: [{ session: [] }]
+      parameters:
+        - { name: de, in: query, schema: { type: string, format: date } }
+        - { name: ate, in: query, schema: { type: string, format: date } }
+      responses:
+        "200": { description: "text/csv; separador ;" }
+        "404": { description: Sem permissão reports.export }
+  /app/configuracoes/exportar:
+    get:
+      summary: Portabilidade (LGPD) — dados da própria titular em JSON
+      security: [{ session: [] }]
+      responses:
+        "200": { description: JSON para download (CPF e chave PIX apenas mascarados) }
+        "401": { description: Sem sessão }

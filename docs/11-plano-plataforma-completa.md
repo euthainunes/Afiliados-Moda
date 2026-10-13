@@ -80,7 +80,21 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 | **F. Documentação** | Arquitetura atualizada, API (OpenAPI das rotas `/api`), modelo de dados, guia de integrações, checklist de produção, lista de dependências externas | Aplicação executável seguindo a documentação |
 | **G. Segurança (3b)** | MFA para a equipe, adaptador de e-mail real, CSP com nonce | Testes de MFA; nenhuma rota do painel sem segundo fator em produção |
 
-## 5. Decisões que preciso confirmar
+## 4.1 Situação da execução
+| Etapa | Situação |
+|---|---|
+| A. Modo demonstração e contratos | ✅ concluída |
+| B. Financeiro | ✅ concluída (com dados de demonstração; dados reais dependem da VTEX e do contrato) |
+| C. Área da usuária | ✅ concluída |
+| D. Painel | ✅ concluída |
+| E. Dados de demonstração coerentes | ✅ concluída (`src/demo/seed.ts`) |
+| F. Documentação | ✅ docs 12, 13, 14 e OpenAPI |
+| G. Segurança (MFA, CSP) e e-mail real | ⏳ pendente |
+
+## 5. Decisões confirmadas pela usuária
+Todas as recomendações abaixo foram aceitas e aplicadas.
+
+## 5.1 Decisões (registro)
 | # | Decisão | Recomendação | Por quê |
 |---|---|---|---|
 | 1 | Simular o ciclo financeiro completo com dados fictícios (pedidos, comissões, resgates) | **Sim**, sempre marcado como demonstração e bloqueado em produção | Permite validar telas e regras antes da VTEX, como pedido |
