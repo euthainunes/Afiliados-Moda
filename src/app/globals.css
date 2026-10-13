@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* Design tokens (docs/04 §6). Direção inicial, sujeita à identidade visual final (D16). */
+:root {
+  --ink: #1a1a1a;
+  --canvas: #faf7f4;
+  --surface: #ffffff;
+  --brand: #b4475a;
+  --brand-hover: #9a3a4b;
+  --brand-ink: #ffffff;
+  --accent: #2f5d50;
+  --warning: #8a5a12;
+  --warning-bg: #fdf3e1;
+  --danger: #b42318;
+  --danger-bg: #fdecea;
+  --success-bg: #e8f2ee;
+  --muted: #6b6560;
+  --line: #e7e1db;
+  --focus: #1f5fbf;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-accent: var(--accent);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-success-bg: var(--success-bg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-focus: var(--focus);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+body {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

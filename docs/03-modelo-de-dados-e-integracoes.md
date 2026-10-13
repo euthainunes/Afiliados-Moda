@@ -13,9 +13,6 @@
 erDiagram
   users ||--|| profiles : tem
   users ||--o{ user_roles : possui
-  roles ||--o{ user_roles : ""
-  roles ||--o{ role_permissions : ""
-  permissions ||--o{ role_permissions : ""
   users ||--o{ sessions : ""
   users ||--o{ consents : aceita
   users ||--o| payout_accounts : "dados de recebimento"
@@ -68,7 +65,7 @@ erDiagram
 |---|---|---|
 | `users` | id, email (citext), email_verified_at, password_hash (argon2id), status (`active`,`suspended`,`deleted`), last_login_at | `UNIQUE(email)`; se usar provedor de auth gerenciado, esta tabela espelha o ID externo |
 | `profiles` | user_id PK/FK, display_name, username, avatar_url, bio, social_links jsonb, birth_year? | `UNIQUE(lower(username))`; dados **públicos**: display_name, username, avatar, bio |
-| `roles`, `permissions`, `role_permissions`, `user_roles` | papel (`user`,`operator`,`admin`,`brand_rep`), permissão (`looks.moderate`…) | `user_roles.brand_id` opcional para escopo de marca |
+| `user_roles` | user_id, role (`user`,`operator`,`admin`,`brand_rep`), brand_id?, granted_by | **Ajustado na Fase 3:** o mapeamento papel → permissões fica versionado em código (`src/modules/access/permissions.ts`), não em tabelas; ver doc 08 |
 | `sessions` | id, user_id, created_at, expires_at, ip_hash, user_agent, revoked_at | IP armazenado como hash com *salt* rotativo |
 | `consents` | user_id, document (`terms`,`privacy`,`rewards_rules`), version, accepted_at | Histórico; nunca sobrescrever |
 | `payout_accounts` | user_id, pix_key_type, pix_key_enc, cpf_enc, holder_name_enc, verified_at | **Criptografia em nível de campo**; coletado só no 1º resgate |
