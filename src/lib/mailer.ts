@@ -1,21 +1,22 @@
 import { env } from "@/lib/env";
+import type { EmailProvider, OutgoingEmail } from "@/integrations/contracts";
+import { ConsoleEmailProvider, MemoryEmailProvider, ResendEmailProvider } from "@/integrations/email/providers";
 
-export type Mail = { to: string; subject: string; text: string };
+export { memoryOutbox } from "@/integrations/email/providers";
+export type Mail = OutgoingEmail;
 
-// Caixa de saída em memória: usada nos testes automatizados para inspecionar e-mails enviados.
-export const memoryOutbox: Mail[] = [];
+let provider: EmailProvider | undefined;
 
-// O provedor transacional (Resend/Postmark/SES) ainda será escolhido (docs/04). Até lá:
-// - "console": imprime o e-mail no terminal (apenas desenvolvimento);
-// - "memory": guarda em memória (testes).
+// O provedor é escolhido por configuração (MAIL_DRIVER). Em produção, env() já exige um provedor real.
+function emailProvider(): EmailProvider {
+  if (!provider) {
+    const { MAIL_DRIVER, RESEND_API_KEY, MAIL_FROM } = env();
+    provider =
+      MAIL_DRIVER === "memory" ? new MemoryEmailProvider() : MAIL_DRIVER === "resend" ? new ResendEmailProvider(RESEND_API_KEY, MAIL_FROM) : new ConsoleEmailProvider();
+  }
+  return provider;
+}
+
 export async function sendMail(mail: Mail): Promise<void> {
-  const { MAIL_DRIVER, NODE_ENV } = env();
-  if (MAIL_DRIVER === "memory") {
-    memoryOutbox.push(mail);
-    return;
-  }
-  if (NODE_ENV === "production") {
-    throw new Error("Provedor de e-mail não configurado para produção.");
-  }
-  console.info(`\n[e-mail de desenvolvimento] para: ${mail.to}\nassunto: ${mail.subject}\n\n${mail.text}\n`);
+  await emailProvider().send(mail);
 }

@@ -5,3 +5,6 @@ export * from "./catalog";
 export * from "./looks";
 export * from "./tracking";
 export * from "./commercial";
+export * from "./integrations";
+export * from "./finance";
+export * from "./engagement";

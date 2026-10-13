@@ -1,4 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [{ "path": "/api/cron/importar-feeds", "schedule": "0 */6 * * *" }]
+  "crons": [
+    { "path": "/api/cron/importar-feeds", "schedule": "0 */6 * * *" },
+    { "path": "/api/cron/sincronizar-pedidos", "schedule": "0 * * * *" },
+    { "path": "/api/cron/rotinas-financeiras", "schedule": "30 9 * * *" }
+  ]
 }

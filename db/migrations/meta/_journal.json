@@ -36,6 +36,20 @@
       "when": 1791910672638,
       "tag": "0004_commission_rules_integrity",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791912938590,
+      "tag": "0005_finance_integrations_engagement",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791912939834,
+      "tag": "0006_ledger_integrity",
+      "breakpoints": true
     }
   ]
 }
