@@ -6,6 +6,7 @@ const env = {
   AUTH_SECRET: "segredo-de-teste-e2e-com-mais-de-32-caracteres-0123",
   APP_URL: `http://localhost:${PORT}`,
   MAIL_DRIVER: "console",
+  CRON_SECRET: "segredo-do-agendador-de-teste-0123456789",
 };
 
 // Testes de ponta a ponta contra o build de produção, com banco de teste e dados fictícios.
@@ -15,7 +16,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: process.env.CI ? "github" : "list",
-  use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure" },
+  use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure", screenshot: "only-on-failure" },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "celular", use: { ...devices["Pixel 7"] } },

@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 import { PASSWORD, seedAccount } from "./support";
 
 async function loginAs(page: import("@playwright/test").Page, email: string, next?: string) {

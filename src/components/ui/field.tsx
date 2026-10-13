@@ -8,13 +8,15 @@ export function Field({
   hint,
   errors,
   className,
+  idPrefix = "campo",
   ...input
-}: ComponentProps<"input"> & { name: string; label: string; hint?: ReactNode; errors?: string[] }) {
-  const id = input.id ?? `campo-${name}`;
+}: ComponentProps<"input"> & { name: string; label: string; hint?: ReactNode; errors?: string[]; idPrefix?: string }) {
+  // idPrefix evita ids repetidos quando há mais de um formulário na mesma página.
+  const id = input.id ?? `${idPrefix}-${name}`;
   const hintId = hint ? `${id}-ajuda` : undefined;
   const errorId = errors?.length ? `${id}-erro` : undefined;
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
+    <div className={cn("flex min-w-0 flex-col gap-1.5", className)}>
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>
@@ -24,7 +26,7 @@ export function Field({
         aria-invalid={errors?.length ? true : undefined}
         aria-describedby={[hintId, errorId].filter(Boolean).join(" ") || undefined}
         className={cn(
-          "h-11 rounded-lg border bg-surface px-3 text-base text-ink placeholder:text-muted",
+          "h-11 w-full min-w-0 rounded-lg border bg-surface px-3 text-base text-ink placeholder:text-muted",
           errors?.length ? "border-danger" : "border-line",
         )}
         {...input}
@@ -47,9 +49,10 @@ export function CheckboxField({
   name,
   children,
   errors,
+  idPrefix = "campo",
   ...input
-}: ComponentProps<"input"> & { name: string; children: ReactNode; errors?: string[] }) {
-  const id = `campo-${name}`;
+}: ComponentProps<"input"> & { name: string; children: ReactNode; errors?: string[]; idPrefix?: string }) {
+  const id = `${idPrefix}-${name}`;
   const errorId = errors?.length ? `${id}-erro` : undefined;
   return (
     <div className="flex flex-col gap-1">

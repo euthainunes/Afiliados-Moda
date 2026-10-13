@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, newIsolatedContext, test } from "./fixtures";
 import { clickCount, PASSWORD, seedAccount, seedFictitiousBrand } from "./support";
 
 // Fluxo central: importar catálogo → montar look → publicar → compartilhar → clique rastreado.
@@ -62,7 +63,7 @@ test("usuária monta, publica e compartilha um look; o clique é rastreado", asy
   await expect(page.getByRole("link", { name: "WhatsApp" })).toHaveAttribute("href", /wa\.me\/\?text=/);
 
   // Página pública com metadados de compartilhamento
-  const visitor = await context.browser()!.newContext();
+  const visitor = await newIsolatedContext(context.browser()!);
   const pub = await visitor.newPage();
   await pub.goto(new URL(url).pathname);
   await expect(pub.getByRole("heading", { level: 1 })).toHaveText(title);

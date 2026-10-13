@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test } from "./fixtures";
 import { PASSWORD, seedAccount } from "./support";
 
 // Gera capturas de tela das telas principais para revisão visual (não faz asserções).
