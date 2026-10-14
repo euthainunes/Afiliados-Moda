@@ -3,7 +3,17 @@ import Link from "next/link";
 import { Alert } from "@/components/ui/alert";
 import { safeNext } from "@/lib/auth/current";
 import { redirectIfAuthenticated } from "../actions";
+import { GoogleButton } from "@/components/google-button";
 import { LoginForm, ResendVerificationForm } from "./login-form";
+
+const GOOGLE_MESSAGES: Record<string, string> = {
+  cancelado: "O login com Google foi cancelado.",
+  expirado: "O login com Google expirou. Tente de novo.",
+  suspensa: "Esta conta está suspensa. Fale com o suporte pela página de contato.",
+  indisponivel: "Não foi possível entrar com esta conta Google.",
+  limite: "Muitas tentativas. Aguarde alguns minutos e tente novamente.",
+  erro: "Não foi possível entrar com o Google agora. Tente de novo ou use e-mail e senha.",
+};
 
 export const metadata: Metadata = { title: "Entrar" };
 
@@ -25,6 +35,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <Alert tone="success">E-mail confirmado! Agora é só entrar.</Alert>
         </div>
       )}
+      {params.google && GOOGLE_MESSAGES[params.google] && (
+        <div className="mb-4">
+          <Alert tone="danger">{GOOGLE_MESSAGES[params.google]}</Alert>
+        </div>
+      )}
+      <GoogleButton next={next} />
       <LoginForm next={next} />
       <ResendVerificationForm />
       <p className="mt-6 text-center text-sm text-muted">

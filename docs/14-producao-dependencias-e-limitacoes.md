@@ -48,7 +48,9 @@ Marque cada item com evidência (print, log, ata). **Não operar com dinheiro re
 - [ ] Variáveis no cofre da hospedagem: `DATABASE_URL`, `AUTH_SECRET` (≥ 48 bytes aleatórios), `APP_URL` (https), `APP_ENV=production`, `MAIL_DRIVER=resend`, `MAIL_FROM`, `RESEND_API_KEY`, `PII_ENCRYPTION_KEY` (32 bytes base64, **guardar cópia segura**: sem ela os CPFs, chaves PIX e segredos de duas etapas ficam ilegíveis), `CRON_SECRET` (≥ 32), `IMAGE_REMOTE_HOSTS`, credenciais VTEX. `REQUIRE_STAFF_MFA` pode ficar vazia (em produção é sempre obrigatória).
 - [ ] Agendador configurado para `/api/cron/importar-feeds` (6/6 h), `/api/cron/sincronizar-pedidos` (1/1 h), `/api/cron/rotinas-financeiras` (diária), `/api/cron/limpeza` (diária) com `Authorization: Bearer CRON_SECRET` (`vercel.json` já define os horários na Vercel).
 - [ ] Domínio com HTTPS; `APP_URL` correto (links de e-mail e de compartilhamento).
-- [ ] Monitoramento de erros (ex.: Sentry) e alerta de disponibilidade para `/` e `/r/*`.
+- [ ] Monitoramento: registro estruturado e tela de erro com código já implementados; contratar ferramenta de alertas de erro (ex.: Sentry) e monitor de disponibilidade para `/` e `/r/*`.
+- [ ] **Teste de restauração** com `scripts/backup-restore-check.sh` contra uma cópia do banco de produção (gera dump, restaura em base temporária, compara tabelas, migrações e livro-razão); registrar data e resultado. Repetir a cada trimestre.
+- [ ] Confirmar que a hospedagem **sobrescreve** `X-Forwarded-For` (a Vercel faz isso). Atrás de outro proxy, os limites de tentativa por IP podem ser burlados por cabeçalho forjado.
 - [ ] Página **Saúde do sistema** sem itens em "Atenção".
 
 ### Segurança
@@ -56,7 +58,8 @@ Marque cada item com evidência (print, log, ata). **Não operar com dinheiro re
 - [ ] Cada pessoa da equipe ativou a verificação e guardou os códigos de recuperação (Saúde do sistema sem pendência).
 - [x] Content Security Policy com nonce (implementado).
 - [ ] Conferir no navegador do domínio final que nenhum recurso é bloqueado (console sem erros de CSP) e que `IMAGE_REMOTE_HOSTS` cobre a CDN das imagens.
-- [ ] Revisão de segurança (OWASP ASVS nível 1) e varredura de dependências.
+- [x] Revisão de segurança interna (estilo OWASP ASVS nível 1) — achados corrigidos (doc 11 §4.3).
+- [ ] Revisão de segurança **externa** (pentest) e varredura de dependências (`pnpm audit`) antes do lançamento.
 - [ ] Primeira administradora criada por procedimento controlado (não pelo seed); segunda administradora para quatro olhos.
 - [ ] Rotação documentada de `AUTH_SECRET`, `CRON_SECRET`, credenciais VTEX e chave de e-mail.
 
@@ -96,20 +99,22 @@ Marque cada item com evidência (print, log, ata). **Não operar com dinheiro re
 - **Notificações de pedidos (hook/feed VTEX) não implementadas**; a sincronização é por consulta periódica.
 - **Devoluções na VTEX não mapeadas** (dependem de validação com pedidos reais).
 - **Base de cálculo por pedido inteiro** (todos os itens da marca no pedido atribuído); atribuição apenas dos itens do look depende da decisão D6.
-- **Login com Google** não implementado (depende de credenciais OAuth; e-mail + senha + duas etapas funcionam).
+- **Login com Google** implementado mas testado só com respostas simuladas; depende das credenciais OAuth (doc 12 §7). Contas criadas pelo Google precisam criar uma senha para excluir a conta.
 - **E-mail real** implementado (Resend) e testado contra API simulada; falta testar com a conta e o domínio reais.
 - **Verificação em duas etapas** só por app autenticador (sem SMS, por segurança); chaves de acesso (passkeys/WebAuthn) ficam para depois.
 - **CSP** permite estilos inline (`style-src 'unsafe-inline'`); scripts exigem nonce.
 - **Pagamentos** são registrados manualmente (PIX fora da plataforma); não há PSP integrado.
 - **Pagamentos parciais da marca** não são aceitos: viram divergência para tratar com a marca.
 - **Cache:** todas as páginas são renderizadas a cada acesso — exigência da CSP com nonce. Com volume, avaliar CDN/cache de dados (consultas) em vez de páginas estáticas.
-- **Imagens fictícias** são SVG locais; imagens reais exigem configuração de host.
+- **Imagens fictícias** são SVG locais; imagens reais exigem configuração de host (`IMAGE_REMOTE_HOSTS` ou domínios da marca; outras são rejeitadas na importação).
+- **Autocompra** só é detectada quando a autora está logada ao clicar no próprio link. Compra pelo próprio link numa janela anônima não é detectada; depende de a VTEX informar dados da compradora (CPF/e-mail em hash) para comparar — a decisão D8 e a auditoria VTEX definem isso.
+- **Proteção contra SSRF** recusa endereços internos escritos como IP e nomes locais; nomes de domínio que apontam para IPs internos não são detectados (irrelevante na Vercel, que não tem rede privada).
 
 ## 5. Testes realizados (estado atual)
 | Tipo | Quantidade | O que cobre |
 |---|---|---|
-| Unitários | 7 arquivos | permissões, validações, preços, feed, rastreamento, cálculo financeiro, arredondamento, VTEX (mapeamento), tentativas, CPF, TOTP (vetores da RFC 6238), CSP, contrato do e-mail real |
-| Integração (Postgres real) | 8 arquivos | autenticação, verificação em duas etapas (pendência, anti-replay, recuperação, limite, obrigatoriedade da equipe, redefinição), rotina de limpeza, sessões, acesso, catálogo, looks e cliques, operação, ciclo financeiro completo (atribuição → aprovação → devolução/cancelamento → elegibilidade → fatura → resgate → estorno), integridade do livro-razão no banco, bloqueios de produção, sincronização idempotente, LGPD, suporte, configurações, saúde |
-| Ponta a ponta (Playwright) | 26 cenários × 2 dispositivos (52 execuções) | cadastro/login, ativação e desafio da verificação em duas etapas, CSP sem bloqueios, permissões por papel, catálogo → look → publicação → clique rastreado, operação do painel, demonstração completa (desempenho, recompensas, aprovação de resgate, integrações, conciliação, saúde), suporte, privacidade, contato |
+| Unitários | 8 arquivos | permissões, validações, preços, feed, rastreamento, cálculo financeiro, arredondamento, VTEX (mapeamento), tentativas, CPF, TOTP (vetores da RFC 6238), CSP, contrato do e-mail real, redirecionamento seguro, endereços externos (SSRF), registro sem dados sensíveis |
+| Integração (Postgres real) | 9 arquivos | autenticação, login com Google (protocolo e regras de vínculo, com respostas simuladas), verificação em duas etapas (pendência, anti-replay, recuperação, limite, obrigatoriedade da equipe, redefinição), rotina de limpeza, sessões, acesso, catálogo, looks e cliques, operação, ciclo financeiro completo (atribuição → aprovação → devolução/cancelamento → elegibilidade → fatura → resgate → estorno), integridade do livro-razão no banco, bloqueios de produção, sincronização idempotente, LGPD, suporte, configurações, saúde |
+| Ponta a ponta (Playwright) | 28 cenários × 2 dispositivos (56 execuções) | cadastro/login, ativação e desafio da verificação em duas etapas, CSP sem bloqueios, permissões por papel, catálogo → look → publicação → clique rastreado, operação do painel, demonstração completa (desempenho, recompensas, aprovação de resgate, integrações, conciliação, saúde), suporte, privacidade, contato |
 
-Total: 142 testes unitários/integração e 52 execuções ponta a ponta, todos passando localmente. Mutações propositais (retirar checagem de dono, de aprovador diferente, de idempotência, de status da conta) foram detectadas pelos testes. Comandos: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e`.
+Total: 158 testes unitários/integração e 56 execuções ponta a ponta, todos passando localmente. Mutações propositais (retirar checagem de dono, de aprovador diferente, de idempotência, de status da conta) foram detectadas pelos testes. Comandos: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e`.

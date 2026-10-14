@@ -79,6 +79,7 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 | **E. Dados de demonstração coerentes** | Usuárias com perfis variados, pedidos e conversões em todos os estados, extratos e resgates em todas as etapas, notificações | Valores seguem as regras cadastradas; tudo marcado como demonstração |
 | **F. Documentação** | Arquitetura atualizada, API (OpenAPI das rotas `/api`), modelo de dados, guia de integrações, checklist de produção, lista de dependências externas | Aplicação executável seguindo a documentação |
 | **G. Segurança (3b)** | MFA para a equipe, adaptador de e-mail real, CSP com nonce | Testes de MFA; nenhuma rota do painel sem segundo fator em produção |
+| **H. Prontidão para homologação** | Revisão de segurança interna com correções, registro de erros, teste de restauração de backup, login com Google pronto para ativar | Achados corrigidos com teste; restauração verificada; Google testado com respostas simuladas |
 
 ## 4.1 Situação da execução
 | Etapa | Situação |
@@ -89,6 +90,7 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 | D. Painel | ✅ concluída |
 | E. Dados de demonstração coerentes | ✅ concluída (`src/demo/seed.ts`) |
 | F. Documentação | ✅ docs 12, 13, 14 e OpenAPI |
+| H. Prontidão para homologação | ✅ concluída (ver §4.3). **Pendentes externos:** credenciais do Google, ferramenta de alertas de erro, pentest externo |
 | G. Segurança (MFA, CSP) e e-mail real | ✅ concluída: verificação em duas etapas, CSP com nonce, rotina de limpeza, contrato do e-mail real testado com API simulada. **Pendentes externos:** conta do provedor de e-mail e credenciais do login com Google |
 
 ### 4.2 Etapa G — o que foi feito
@@ -102,6 +104,25 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 | E-mail real | Adaptador Resend com testes de contrato (formato, nova tentativa em erro temporário, sem repetição em erro definitivo) usando API simulada | `tests/unit/email.test.ts` |
 
 **Decisões tomadas nesta etapa (reversíveis):** `style-src` mantém `'unsafe-inline'` (o React e o `next/image` usam atributos `style`; scripts continuam estritamente protegidos). Criadoras **podem** ativar a verificação, mas não são obrigadas. Retenção de contatos públicos proposta em 180 dias (parâmetro editável, a confirmar com o jurídico).
+
+### 4.3 Etapa H — revisão de segurança e prontidão
+**Revisão de segurança interna** (estilo OWASP ASVS nível 1, autorização de todas as ações e rotas, IDOR, XSS, SQL, sessões, enumeração, SSRF). Achados e correções:
+
+| # | Achado | Gravidade | Correção | Teste |
+|---|---|---|---|---|
+| 1 | Destino pós-login com tabulação (`/\t/site.com`) virava redirecionamento para outro site | Média | `safeNext` recusa caracteres de controle e confere a origem após interpretar a URL | unitário + E2E |
+| 2 | Ajuste manual podia beneficiar quem o propõe ou aprova | Média | Proposta e aprovação recusadas quando a pessoa é a beneficiária | integração |
+| 3 | Cadastro com e-mail existente respondia mais rápido (enumeração) e permitia envio em massa de avisos | Baixa | Mesmo custo de processamento; limite de avisos por endereço | integração |
+| 4 | Formulário de recebimento revelava se um CPF tinha conta | Baixa | Mensagem genérica, registro na auditoria e limite de 5 alterações/dia | integração |
+| 5 | Imagem de compartilhamento buscava imagens de qualquer host | Baixa | Imagens só de domínios da marca ou `IMAGE_REMOTE_HOSTS` (importação e cartão) | unitário |
+| 6 | Download do feed seguia redirecionamentos sem validar | Baixa | Redirecionamentos seguidos manualmente; recusa http e endereços internos | unitário |
+| 7 | Autocompra por janela anônima não é detectada | Baixa | **Documentado** (depende de dados da compradora vindos da VTEX e da decisão D8) | — |
+| 8 | Sem teto de looks, atendimentos e favoritos por conta | Baixa | Limites por hora e teto de 50 rascunhos | — |
+| — | Mensagens internas de erro no suporte; chave de configuração com `in` | Mínima | Só erros previstos chegam à tela; `Object.hasOwn` | — |
+
+**Demais entregas:** registro estruturado sem dados sensíveis + `instrumentation.ts` + telas de erro com código; `scripts/backup-restore-check.sh` (testado localmente: 43 tabelas idênticas, livro-razão balanceado); login com Google (doc 12 §7); exclusão de conta passa a apagar segundo fator e vínculos externos.
+
+**Decisões desta etapa (reversíveis):** vínculo automático com conta existente de mesmo e-mail (o Google verificou o endereço), com invalidação da senha quando a conta não tinha confirmado o e-mail; criadoras vindas do Google concluem cadastro com aceite de termos e 18+; registro de erros em JSON na hospedagem até haver ferramenta contratada.
 
 ## 5. Decisões confirmadas pela usuária
 Todas as recomendações abaixo foram aceitas e aplicadas.

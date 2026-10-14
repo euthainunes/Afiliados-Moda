@@ -31,4 +31,10 @@ export const RATE_LIMITS = {
   // Códigos da verificação em duas etapas (por conta). Com 3 códigos válidos por vez, 10 tentativas
   // a cada 15 min tornam a adivinhação inviável.
   mfaPerUser: { limit: 10, windowSec: 15 * 60 },
+  // Dados de recebimento (CPF/PIX): poucas alterações por dia.
+  payoutAccountPerUser: { limit: 5, windowSec: 24 * 3600 },
+  // Escritas comuns de uma conta (looks, atendimentos, favoritos): teto contra automação abusiva.
+  looksPerUser: { limit: 30, windowSec: 3600 },
+  ticketsPerUser: { limit: 5, windowSec: 3600 },
+  favoritesPerUser: { limit: 120, windowSec: 3600 },
 } as const;

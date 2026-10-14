@@ -67,6 +67,10 @@ describe("cadastro e confirmação de e-mail", () => {
     const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(users).where(eq(users.email, email));
     expect(n).toBe(1);
     expect(memoryOutbox.at(-1)?.subject).toBe("Tentativa de cadastro com seu e-mail");
+
+    // Tentativas de vários IPs não viram envio em massa para a mesma pessoa.
+    for (let i = 0; i < 6; i++) await signUp(signUpInput(email), ctx());
+    expect(memoryOutbox.filter((m) => m.to === email && m.subject.startsWith("Tentativa")).length).toBeLessThanOrEqual(3);
   });
 
   it("trata e-mail sem diferenciar maiúsculas", async () => {

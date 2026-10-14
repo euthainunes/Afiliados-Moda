@@ -76,3 +76,19 @@ test("criadora ativa a verificação em duas etapas e passa a ser desafiada no l
   await expect(page).toHaveURL(/\/app/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
+
+test("destino com tabulação após o login não leva a outro site", async ({ page }) => {
+  const { email } = await seedAccount();
+  await page.goto("/entrar?next=/%09/malicioso.example");
+  await page.getByLabel("E-mail", { exact: true }).first().fill(email);
+  await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/app$/);
+});
+
+test("sem credenciais do Google, o botão não aparece e a rota responde 404", async ({ page, request }) => {
+  await page.goto("/entrar");
+  await expect(page.getByRole("link", { name: "Continuar com Google" })).toHaveCount(0);
+  expect((await request.get("/api/auth/google", { maxRedirects: 0 })).status()).toBe(404);
+  expect((await request.get("/api/auth/google/callback?code=x&state=y", { maxRedirects: 0 })).status()).toBe(404);
+});

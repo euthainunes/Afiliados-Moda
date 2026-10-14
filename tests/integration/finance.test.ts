@@ -1,7 +1,7 @@
 import { and, eq, sql } from "drizzle-orm";
 import { afterEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
-import { conversions, ledgerEntries, ledgerTransactions, notifications, orders, payoutRequests, reconciliationItems } from "@/lib/db/schema";
+import { auditLogs, conversions, ledgerEntries, ledgerTransactions, notifications, orders, payoutRequests, reconciliationItems } from "@/lib/db/schema";
 import { resetEnvCache } from "@/lib/env";
 import { AccessDeniedError } from "@/modules/access/can";
 import { conversionPosted, platformTotals, userBalances } from "@/modules/finance/ledger";
@@ -19,6 +19,7 @@ import {
   savePayoutAccount,
 } from "@/modules/finance/operations";
 import { reprocessOrder } from "@/modules/orders/sync";
+import { fictitiousCpf } from "@/demo/seed";
 import { createUser } from "../support/factories";
 import { DAY, financeScenario, withStatus } from "../support/finance";
 
@@ -203,6 +204,20 @@ describe("elegibilidade, cobrança da marca e resgate", () => {
   });
 });
 
+describe("dados de recebimento", () => {
+  it("CPF de outra conta é recusado sem revelar o motivo, fica na auditoria e há limite diário", async () => {
+    const a = await createUser();
+    const b = await createUser();
+    const cpf = fictitiousCpf(7171);
+    await savePayoutAccount(a.id, { holderName: "Pessoa A", cpf, pixKeyType: "email", pixKey: "a@exemplo.test" });
+    await expect(savePayoutAccount(b.id, { holderName: "Pessoa B", cpf, pixKeyType: "email", pixKey: "b@exemplo.test" })).rejects.toThrow(/Não foi possível confirmar/);
+    const logs = await db.select().from(auditLogs).where(and(eq(auditLogs.actorId, b.id), eq(auditLogs.action, "payout_account.cpf_conflict")));
+    expect(logs).toHaveLength(1);
+    for (let i = 0; i < 4; i++) await savePayoutAccount(b.id, { holderName: "Pessoa B", cpf: fictitiousCpf(7200 + i), pixKeyType: "email", pixKey: "b@exemplo.test" });
+    await expect(savePayoutAccount(b.id, { holderName: "Pessoa B", cpf: fictitiousCpf(7300), pixKeyType: "email", pixKey: "b@exemplo.test" })).rejects.toThrow(/Muitas alterações/);
+  });
+});
+
 describe("ajustes, integridade e proteção de produção", () => {
   it("ajuste manual exige proposta e aprovação por pessoas diferentes", async () => {
     const s = await financeScenario();
@@ -214,6 +229,11 @@ describe("ajustes, integridade e proteção de produção", () => {
     await reviewAdjustment(adm2.principal, adj.id, true);
     expect((await userBalances(s.creator.id)).eligibleCents).toBe(1500);
     await expect(reviewAdjustment(adm2.principal, adj.id, true)).rejects.toThrow(FinanceError);
+
+    // Conflito de interesse: ninguém propõe nem aprova ajuste no próprio saldo.
+    await expect(proposeAdjustment(op.principal, { userId: op.id, amountCents: 900, reason: "crédito para mim mesma", isDemo: true })).rejects.toBeInstanceOf(AccessDeniedError);
+    const forAdmin = await proposeAdjustment(op.principal, { userId: adm2.id, amountCents: 900, reason: "crédito para a aprovadora", isDemo: true });
+    await expect(reviewAdjustment(adm2.principal, forAdmin.id, true)).rejects.toBeInstanceOf(AccessDeniedError);
   });
 
   it("o banco recusa lançamentos desbalanceados e alterações no livro-razão", async () => {

@@ -4,6 +4,7 @@ import { brands, campaigns, clicks, looks, products, trackingLinks, type Trackin
 import { isAllowedDomain } from "@/modules/catalog/domains";
 import { consumeRateLimit } from "@/modules/identity/rate-limit";
 import { ulid } from "./ids";
+import { reportError } from "@/lib/observability";
 
 // Agentes de pré-visualização de links e robôs: o clique é registrado como robô e não recebe click_id.
 const BOT_UA = /bot|crawler|spider|slurp|facebookexternalhit|whatsapp|telegram|discord|preview|embedly|curl|wget|python-requests/i;
@@ -107,7 +108,7 @@ export async function resolveClick(code: string, ctx: ClickContext): Promise<{ u
     });
     return { url, clickId };
   } catch (error) {
-    console.error("[rastreamento] falha ao registrar clique", { code, error: error instanceof Error ? error.message : error });
+    reportError(error, { event: "rastreamento.falha_clique", link: code });
     return { url: plain, clickId: null };
   }
 }

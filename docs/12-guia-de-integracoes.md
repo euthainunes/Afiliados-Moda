@@ -61,8 +61,20 @@
 5. **Teste:** em homologação, aprovar e registrar pagamento de valor simbólico com comprovante real; conferir extrato.
 
 ## 5. Monitoramento e analytics
-- **Hoje:** logs estruturados no servidor, página "Saúde do sistema", alertas de integração no painel.
-- **A contratar:** Sentry (ou similar) para erros — exige DSN; analytics de produto com consentimento. Não implementados.
+- **Hoje:** registro estruturado (uma linha JSON por evento, `src/lib/observability.ts`) com dados sensíveis omitidos (senhas, tokens, CPF, PIX, códigos; e-mails mascarados). Todo erro de servidor (páginas, rotas, Server Actions) passa por `src/instrumentation.ts` e é registrado com o **código** exibido na tela de erro, para o suporte localizar o evento. A Vercel guarda esses registros e permite buscar por `event` ou `digest`. Há também a página "Saúde do sistema" e os alertas de integração no painel.
+- **A contratar:** ferramenta de erros com alertas (ex.: Sentry — exige conta, DSN e o SDK oficial `@sentry/nextjs`; entra no mesmo `onRequestError`, sem mudar o resto) e monitor de disponibilidade externo para `/` e `/r/*`. Analytics de produto com consentimento: fora do MVP.
+
+## 7. Login com Google (OpenID Connect)
+1. **Finalidade:** entrar ou criar conta com a conta Google, sem senha.
+2. **Dados recebidos:** identificador da conta Google (`sub`), e-mail **verificado** pelo Google e nome. Nada é enviado além do pedido de login.
+3. **Credenciais:** projeto no Google Cloud → "Tela de consentimento OAuth" (tipo externo, escopos `openid`, `email`, `profile`; publicar/verificar o app para sair do modo de teste) → "Credenciais" → "ID do cliente OAuth" do tipo **aplicativo da Web**, com URI de redirecionamento autorizado `https://<domínio>/api/auth/google/callback` (um por ambiente). Variáveis `GOOGLE_CLIENT_ID` e `GOOGLE_CLIENT_SECRET` no cofre da hospedagem.
+4. **Autenticação:** fluxo de código de autorização com PKCE (S256), `state` (amarra a volta ao navegador que iniciou) e `nonce` (amarra o token ao pedido), guardados em cookie HttpOnly de 10 min.
+5. **Endpoints (documentação pública do Google):** `https://accounts.google.com/o/oauth2/v2/auth` e `https://oauth2.googleapis.com/token`. O ID token é validado (emissor, destinatário, validade, nonce, e-mail verificado); a assinatura não é conferida porque o token chega direto do endpoint de token por TLS com o segredo do cliente (OpenID Connect Core §3.1.3.7).
+6. **Armazenamento:** `user_identities` (provedor + `sub` → conta). Nenhum token do Google é guardado.
+7. **Regras de vínculo:** `sub` já vinculado → entra; e-mail igual a uma conta existente → vincula (se essa conta nunca confirmou o e-mail, a senha dela é invalidada e as sessões encerradas, contra pré-cadastro malicioso); pessoa nova → tela "Concluir cadastro" com aceite dos termos e 18+ obrigatórios. Suspensão e verificação em duas etapas valem igual ao login por senha. Contas criadas pelo Google não têm senha; podem criar uma em "Esqueci minha senha" (necessária, por exemplo, para excluir a conta).
+8. **Erros:** qualquer falha volta ao login com mensagem genérica; detalhes no registro (`auth.google_falhou`). Limite de tentativas por IP igual ao do login.
+9. **Teste antes de ativar:** em homologação, com o app OAuth em modo de teste e usuárias de teste cadastradas no Google Cloud: entrar com conta nova (concluir cadastro), sair e entrar de novo; entrar com o e-mail de uma conta já existente (vínculo); conta com duas etapas (deve pedir o código).
+- **Status:** implementado e testado com respostas **simuladas** do Google; **não** testado contra o Google real. Sem as variáveis, o botão não aparece e as rotas respondem 404.
 
 ## 6. Redes de afiliados externas (Awin, Rakuten, Lomadee…)
 Fora do modelo atual (parceria direta com marcas). Se forem adotadas, entram como novo `OrderSource` (postback/relatório de conversões), sem mudar telas nem livro-razão.

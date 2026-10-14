@@ -21,11 +21,13 @@ import { assertDemoAllowed } from "@/lib/env";
 import { formatCents } from "@/lib/money";
 import { encryptPii, maskTail } from "@/lib/pii";
 import { payoutProvider } from "@/integrations/registry";
-import { assertCan, assertDifferentApprover, type Principal } from "@/modules/access/can";
+import { AccessDeniedError, assertCan, assertDifferentApprover, type Principal } from "@/modules/access/can";
 import { recordAudit } from "@/modules/audit/service";
 import { notify } from "@/modules/notifications/service";
 import { getSetting } from "@/modules/settings/service";
 import { conversionPosted, postTransaction, userBalances } from "./ledger";
+import { RATE_LIMITS } from "@/modules/identity/policies";
+import { consumeRateLimit } from "@/modules/identity/rate-limit";
 
 export class FinanceError extends Error {
   constructor(message: string) {
@@ -210,10 +212,17 @@ export const payoutAccountSchema = z
 // CPF e chave PIX ficam criptografados; o hash do CPF impede o mesmo CPF em contas diferentes.
 export async function savePayoutAccount(userId: string, input: z.input<typeof payoutAccountSchema>) {
   const data = payoutAccountSchema.parse(input);
+  // Limite diário: impede usar o formulário para descobrir se um CPF tem conta na plataforma.
+  const limit = await consumeRateLimit(`payout-account:user:${userId}`, RATE_LIMITS.payoutAccountPerUser);
+  if (!limit.ok) throw new FinanceError("Muitas alterações seguidas nos dados de recebimento. Tente amanhã ou fale com o suporte.");
   const cpfDigits = data.cpf.replace(/\D/g, "");
   const cpfHash = hmac(`cpf:${cpfDigits}`);
   const [other] = await db.select({ userId: payoutAccounts.userId }).from(payoutAccounts).where(eq(payoutAccounts.cpfHash, cpfHash));
-  if (other && other.userId !== userId) throw new FinanceError("Este CPF já está vinculado a outra conta. Fale com o suporte.");
+  if (other && other.userId !== userId) {
+    // Fica registrado para a equipe investigar (possível fraude ou conta duplicada).
+    await recordAudit({ actorId: userId, action: "payout_account.cpf_conflict", entityType: "user", entityId: userId });
+    throw new FinanceError("Não foi possível confirmar estes dados de recebimento. Fale com o suporte.");
+  }
   const values = { pixKeyType: data.pixKeyType, pixKeyEnc: encryptPii(data.pixKey), pixKeyHint: maskTail(data.pixKey), cpfEnc: encryptPii(cpfDigits), cpfHash, holderName: data.holderName };
   await db.insert(payoutAccounts).values({ userId, ...values }).onConflictDoUpdate({ target: payoutAccounts.userId, set: values });
   await recordAudit({ actorId: userId, action: "payout_account.saved", entityType: "user", entityId: userId, after: { pixKeyType: data.pixKeyType, pixKeyHint: values.pixKeyHint } });
@@ -343,6 +352,8 @@ export async function markPayoutPaid(actor: Principal, payoutId: string, referen
 export async function proposeAdjustment(actor: Principal, input: { userId: string; amountCents: number; reason: string; conversionId?: string | null; isDemo: boolean }) {
   assertCan(actor, "ledger.adjust.propose");
   if (!isUuid(input.userId)) throw new FinanceError("Usuária não encontrada.");
+  // Ninguém propõe ajuste no próprio saldo (conflito de interesse).
+  if (input.userId === actor.id) throw new AccessDeniedError("Ajustes no próprio saldo precisam ser propostos por outra pessoa.");
   if (!Number.isSafeInteger(input.amountCents) || input.amountCents === 0) throw new FinanceError("Informe um valor diferente de zero.");
   if (input.reason.trim().length < 10) throw new FinanceError("Explique o motivo do ajuste (mínimo de 10 caracteres).");
   if (input.isDemo) assertDemoAllowed("Ajuste de demonstração");
@@ -361,6 +372,8 @@ export async function reviewAdjustment(actor: Principal, adjustmentId: string, a
     const [a] = await tx.select().from(ledgerAdjustments).where(eq(ledgerAdjustments.id, adjustmentId)).for("update");
     if (!a || a.status !== "proposed") throw new FinanceError("Ajuste não encontrado ou já revisado.");
     assertDifferentApprover(a.proposedBy, actor.id);
+    // Nem aprova ajuste em que é a beneficiária.
+    if (a.userId === actor.id) throw new AccessDeniedError("Ajustes no próprio saldo precisam ser aprovados por outra pessoa.");
     await tx.update(ledgerAdjustments).set({ status: approve ? "approved" : "rejected", reviewedBy: actor.id, reviewedAt: new Date() }).where(eq(ledgerAdjustments.id, a.id));
     if (approve) {
       await postTransaction(tx, {

@@ -87,6 +87,11 @@ export async function signUp(input: SignUpInput, ctx: RequestContext = {}): Prom
 
   const existing = await db.query.users.findFirst({ where: eq(users.email, input.email) });
   if (existing) {
+    // Mesmo custo de processamento do cadastro novo (o hash domina o tempo), para o tempo de resposta
+    // não revelar quem tem conta; e limite por endereço, para não virar ferramenta de envio em massa.
+    await hashPassword(input.password);
+    const byEmail = await consumeRateLimit(`email:addr:${hmac(input.email)}`, RATE_LIMITS.emailPerAddress);
+    if (!byEmail.ok) return { ok: true };
     await sendMail({
       to: input.email,
       subject: "Tentativa de cadastro com seu e-mail",
@@ -95,11 +100,26 @@ export async function signUp(input: SignUpInput, ctx: RequestContext = {}): Prom
     return { ok: true };
   }
 
-  const passwordHash = await hashPassword(input.password);
-  const base = slugify(input.displayName);
+  const userId = await createAccount({ email: input.email, displayName: input.displayName, passwordHash: await hashPassword(input.password) }, ctx);
+  await sendVerificationEmail(userId, input.email);
+  return { ok: true };
+}
 
-  const userId = await db.transaction(async (tx) => {
-    const [user] = await tx.insert(users).values({ email: input.email, passwordHash }).returning({ id: users.id });
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+// Cria usuária, perfil, papel e registros de aceite numa única transação. `onCreated` roda na mesma
+// transação (ex.: vincular a conta Google).
+export async function createAccount(
+  input: { email: string; displayName: string; passwordHash: string; emailVerifiedAt?: Date | null },
+  ctx: RequestContext = {},
+  onCreated?: (tx: Tx, userId: string) => Promise<void>,
+): Promise<string> {
+  const base = slugify(input.displayName);
+  return db.transaction(async (tx) => {
+    const [user] = await tx
+      .insert(users)
+      .values({ email: input.email, passwordHash: input.passwordHash, emailVerifiedAt: input.emailVerifiedAt ?? null })
+      .returning({ id: users.id });
     // Nome de usuária gerado automaticamente; poderá ser editado no perfil.
     let username = base;
     for (let attempt = 0; attempt < 5; attempt++) {
@@ -124,11 +144,9 @@ export async function signUp(input: SignUpInput, ctx: RequestContext = {}): Prom
       { actorId: user.id, actorRoles: ["user"], action: "user.signup", entityType: "user", entityId: user.id, ipHash: ctx.ipHash },
       tx,
     );
+    await onCreated?.(tx, user.id);
     return user.id;
   });
-
-  await sendVerificationEmail(userId, input.email);
-  return { ok: true };
 }
 
 export async function verifyEmail(token: string): Promise<boolean> {
@@ -177,19 +195,24 @@ export async function login(email: string, password: string, ctx: RequestContext
   if (!user.emailVerifiedAt) return { ok: false, error: "unverified" };
 
   await resetRateLimit(emailKey);
-  // Com segundo fator ativo, a sessão nasce pendente e só vale depois do código do app (mfa.ts).
-  const mfaRequired = await isMfaEnabled(user.id);
-  const { token, expiresAt } = await createSession(user.id, ctx, { pendingMfa: mfaRequired });
-  await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id));
+  return { ok: true, ...(await openSession(user.id, ctx)) };
+}
 
-  const roles = (await db.select({ role: userRoles.role }).from(userRoles).where(eq(userRoles.userId, user.id))).map(
+// Abre a sessão depois de a identidade ser comprovada (senha ou provedor externo).
+// Com segundo fator ativo, a sessão nasce pendente e só vale depois do código do app (mfa.ts).
+export async function openSession(userId: string, ctx: RequestContext = {}) {
+  const mfaRequired = await isMfaEnabled(userId);
+  const { token, expiresAt } = await createSession(userId, ctx, { pendingMfa: mfaRequired });
+  await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, userId));
+
+  const roles = (await db.select({ role: userRoles.role }).from(userRoles).where(eq(userRoles.userId, userId))).map(
     (r) => r.role,
   );
   const staff = isStaff(roles);
   if (staff && !mfaRequired) {
-    await recordAudit({ actorId: user.id, actorRoles: roles, action: "staff.login", entityType: "session", ipHash: ctx.ipHash });
+    await recordAudit({ actorId: userId, actorRoles: roles, action: "staff.login", entityType: "session", ipHash: ctx.ipHash });
   }
-  return { ok: true, token, expiresAt, staff, mfaRequired };
+  return { token, expiresAt, staff, mfaRequired };
 }
 
 // Resposta sempre genérica: não informa se o e-mail tem conta.

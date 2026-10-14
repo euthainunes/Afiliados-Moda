@@ -7,12 +7,15 @@ import {
   conversions,
   favorites,
   looks,
+  mfaRecoveryCodes,
   notifications,
   payoutAccounts,
   payoutRequests,
   profiles,
   sessions,
   supportTickets,
+  userIdentities,
+  userMfa,
   userRoles,
   users,
 } from "@/lib/db/schema";
@@ -99,6 +102,10 @@ export async function deleteMyAccount(userId: string, password: string, confirma
     await tx.delete(favorites).where(eq(favorites.userId, userId));
     await tx.delete(notifications).where(eq(notifications.userId, userId));
     await tx.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.userId, userId));
+    // Segundo fator e contas externas vinculadas deixam de existir com a conta.
+    await tx.delete(mfaRecoveryCodes).where(eq(mfaRecoveryCodes.userId, userId));
+    await tx.delete(userMfa).where(eq(userMfa.userId, userId));
+    await tx.delete(userIdentities).where(eq(userIdentities.userId, userId));
     await recordAudit({ actorId: userId, action: "privacy.account_deleted", entityType: "user", entityId: userId }, tx);
   });
 }

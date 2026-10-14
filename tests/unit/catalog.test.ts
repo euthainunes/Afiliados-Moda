@@ -129,3 +129,39 @@ describe("filtros do catálogo vindos da URL", () => {
     expect(catalogFiltersSchema.parse({ max: "-1", pagina: "abc", ordem: "hack" })).toEqual({});
   });
 });
+
+import { isAllowedImageUrl, isPublicHttpsUrl } from "@/modules/catalog/domains";
+
+describe("endereços externos (proteção contra SSRF)", () => {
+  it("recusa http, nomes locais e IPs de redes internas", () => {
+    expect(isPublicHttpsUrl("https://feeds.loja.example/produtos.xml")).toBe(true);
+    for (const bad of [
+      "http://feeds.loja.example/x.xml",
+      "https://localhost/x",
+      "https://127.0.0.1/x",
+      "https://10.0.0.5/x",
+      "https://172.20.1.1/x",
+      "https://192.168.0.1/x",
+      "https://169.254.169.254/latest/meta-data",
+      "https://[::1]/x",
+      "https://usuario:senha@loja.example/x",
+      "nao-e-url",
+    ]) {
+      expect(isPublicHttpsUrl(bad), bad).toBe(false);
+    }
+  });
+
+  it("imagens só de domínios da marca ou de IMAGE_REMOTE_HOSTS", () => {
+    const before = process.env.IMAGE_REMOTE_HOSTS;
+    process.env.IMAGE_REMOTE_HOSTS = "cdn.marca.example";
+    try {
+      expect(isAllowedImageUrl("https://cdn.marca.example/a.jpg")).toBe(true);
+      expect(isAllowedImageUrl("https://img.loja.example/a.jpg", ["loja.example"])).toBe(true);
+      expect(isAllowedImageUrl("https://qualquer.example/a.jpg", ["loja.example"])).toBe(false);
+      expect(isAllowedImageUrl("http://cdn.marca.example/a.jpg")).toBe(false);
+    } finally {
+      if (before === undefined) delete process.env.IMAGE_REMOTE_HOSTS;
+      else process.env.IMAGE_REMOTE_HOSTS = before;
+    }
+  });
+});

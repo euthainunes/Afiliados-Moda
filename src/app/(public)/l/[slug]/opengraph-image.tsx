@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ImageResponse } from "next/og";
 import { site } from "@/config/site";
+import { isAllowedImageUrl } from "@/modules/catalog/domains";
 import { getPublicLook } from "@/modules/looks/service";
 
 export const alt = "Look compartilhado";
@@ -12,7 +13,8 @@ export const dynamic = "force-dynamic";
 // Imagens locais (catálogo fictício) são embutidas; imagens remotas são buscadas pelo gerador.
 async function imageSrc(src: string | null): Promise<string | null> {
   if (!src) return null;
-  if (src.startsWith("https://")) return src;
+  // Só busca imagens remotas em hosts autorizados (IMAGE_REMOTE_HOSTS); as demais ficam de fora do cartão.
+  if (src.startsWith("https://")) return isAllowedImageUrl(src) ? src : null;
   const file = path.join(process.cwd(), "public", path.normalize(src).replace(/^(\.\.[/\\])+/, ""));
   if (!file.startsWith(path.join(process.cwd(), "public"))) return null;
   try {

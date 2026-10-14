@@ -14,6 +14,9 @@ const schema = z.object({
   // Verificação em duas etapas obrigatória para a equipe (operadoras e administradoras).
   // Em produção é sempre obrigatória; fora dela, vale o que estiver configurado (padrão: não obrigatória).
   REQUIRE_STAFF_MFA: z.enum(["true", "false"]).optional(),
+  // Login com Google (OpenID Connect). Sem as duas variáveis, o botão não aparece e as rotas respondem 404.
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 

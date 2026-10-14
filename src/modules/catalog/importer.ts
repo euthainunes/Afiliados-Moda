@@ -18,7 +18,7 @@ import { normalizeText, slugify } from "@/lib/text";
 import { assertCan, type Principal } from "@/modules/access/can";
 import { recordAudit } from "@/modules/audit/service";
 import { parseGoogleMerchantFeed, type FeedItem, type FeedRejection } from "./feed-parser";
-import { isAllowedDomain } from "./domains";
+import { isAllowedDomain, isAllowedImageUrl, isPublicHttpsUrl } from "./domains";
 
 const MAX_FEED_BYTES = 50 * 1024 * 1024;
 const MAX_STORED_ERRORS = 200;
@@ -33,8 +33,19 @@ async function loadSource(source: string): Promise<string> {
     if (!resolved.startsWith(FIXTURES_DIR + path.sep)) throw new Error("Arquivo de feed fora de db/fixtures.");
     return readFile(resolved, "utf8");
   }
-  if (!source.startsWith("https://")) throw new Error("O feed precisa usar https.");
-  const res = await fetch(source, { signal: AbortSignal.timeout(60_000), redirect: "follow" });
+  if (!isPublicHttpsUrl(source)) throw new Error("O feed precisa usar https num endereço público.");
+  // Redirecionamentos são seguidos manualmente (até 3) para validar cada destino.
+  let url = source;
+  let res: Response | undefined;
+  for (let hop = 0; hop <= 3; hop++) {
+    res = await fetch(url, { signal: AbortSignal.timeout(60_000), redirect: "manual" });
+    const location = res.status >= 300 && res.status < 400 ? res.headers.get("location") : null;
+    if (!location) break;
+    url = new URL(location, url).toString();
+    if (!isPublicHttpsUrl(url)) throw new Error("O feed redirecionou para um endereço não permitido.");
+    if (hop === 3) throw new Error("O feed redirecionou vezes demais.");
+  }
+  if (!res) throw new Error("Falha ao baixar o feed.");
   if (!res.ok) throw new Error(`Falha ao baixar o feed: HTTP ${res.status}`);
   const declared = Number(res.headers.get("content-length") ?? 0);
   if (declared > MAX_FEED_BYTES) throw new Error("Feed maior que o limite de 50 MB.");
@@ -140,8 +151,8 @@ export async function importFeed(feedId: string, triggeredBy: string | null): Pr
         rejected.push({ itemId: item.id, reason: "link fora dos domínios autorizados da marca" });
         return false;
       }
-      if (!brand.isFictitious && item.images.some((u) => !u.startsWith("https://"))) {
-        rejected.push({ itemId: item.id, reason: "imagem sem https" });
+      if (!brand.isFictitious && item.images.some((u) => !isAllowedImageUrl(u, brand.allowedDomains))) {
+        rejected.push({ itemId: item.id, reason: "imagem fora dos domínios da marca e de IMAGE_REMOTE_HOSTS (ou sem https)" });
         return false;
       }
       return true;

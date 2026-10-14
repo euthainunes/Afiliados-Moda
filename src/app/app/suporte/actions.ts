@@ -6,7 +6,8 @@ import { z } from "zod";
 import { requireSession, toPrincipal } from "@/lib/auth/current";
 import type { FormState } from "@/lib/form-state";
 import { fieldErrors } from "@/modules/identity/validation";
-import { closeTicket, openTicket, replyTicket } from "@/modules/support/service";
+import { AccessDeniedError } from "@/modules/access/can";
+import { closeTicket, openTicket, replyTicket, SupportError } from "@/modules/support/service";
 
 export async function openTicketAction(_prev: FormState, fd: FormData): Promise<FormState> {
   const session = await requireSession();
@@ -16,6 +17,7 @@ export async function openTicketAction(_prev: FormState, fd: FormData): Promise<
     id = (await openTicket(session.user.id, values as never)).id;
   } catch (error) {
     if (error instanceof z.ZodError) return { status: "error", fieldErrors: fieldErrors(error), values };
+    if (error instanceof SupportError) return { status: "error", message: error.message, values };
     throw error;
   }
   redirect(`/app/suporte/${id}`);
@@ -27,7 +29,9 @@ export async function replyTicketAction(_prev: FormState, fd: FormData): Promise
   try {
     await replyTicket(toPrincipal(session), ticketId, String(fd.get("body") ?? ""));
   } catch (error) {
-    return { status: "error", message: error instanceof Error ? error.message : "Não foi possível enviar." };
+    // Só mensagens previstas chegam à tela; o resto vai ao registro de erros.
+    if (error instanceof SupportError || error instanceof AccessDeniedError) return { status: "error", message: error.message };
+    throw error;
   }
   revalidatePath(`/app/suporte/${ticketId}`);
   revalidatePath(`/admin/suporte/${ticketId}`);
@@ -40,7 +44,8 @@ export async function closeTicketAction(_prev: FormState, fd: FormData): Promise
   try {
     await closeTicket(toPrincipal(session), ticketId);
   } catch (error) {
-    return { status: "error", message: error instanceof Error ? error.message : "Não foi possível encerrar." };
+    if (error instanceof SupportError || error instanceof AccessDeniedError) return { status: "error", message: error.message };
+    throw error;
   }
   revalidatePath(`/app/suporte/${ticketId}`);
   revalidatePath(`/admin/suporte/${ticketId}`);

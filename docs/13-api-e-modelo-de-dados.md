@@ -13,6 +13,8 @@ Especificação OpenAPI: [`docs/api/openapi.yaml`](./api/openapi.yaml). Resumo:
 | `GET /admin/relatorios/exportar` | `reports.export` | CSV auditado |
 | `GET /app/configuracoes/exportar` | sessão | Portabilidade LGPD |
 | `GET /l/{slug}/opengraph-image` | público | Imagem de compartilhamento |
+| `GET /api/auth/google` | público (404 sem credenciais) | Início do login com Google (state, nonce, PKCE) |
+| `GET /api/auth/google/callback` | público (404 sem credenciais) | Volta do Google: entra, vincula ou leva a "Concluir cadastro" |
 | `GET /api/cron/limpeza` | `Bearer CRON_SECRET` | Rotina diária de retenção (sessões, links, limites, contatos) |
 
 ## Serviços de domínio (regras de negócio no servidor)
@@ -22,6 +24,7 @@ Toda tela chama estes serviços por Server Actions, que **relêem a sessão** e 
 |---|---|---|
 | Identidade | `modules/identity/service.ts` | cadastro, confirmação, login, recuperação/troca de senha |
 | Sessões | `modules/identity/sessions.ts` | criar/validar/revogar sessões; sessão pendente até o segundo fator |
+| Login social | `modules/identity/social.ts`, `src/integrations/google/oidc.ts` | login com Google, regras de vínculo, cadastro pendente assinado |
 | Duas etapas | `modules/identity/mfa.ts`, `totp.ts` | TOTP (RFC 6238), códigos de recuperação, anti-replay, obrigatoriedade da equipe, redefinição por administradora |
 | Equipe | `modules/identity/team.ts` | conceder/retirar papéis (mantém 1 admin) |
 | Acesso | `modules/access/*` | papéis, permissões, quatro olhos |
@@ -48,6 +51,7 @@ erDiagram
   users ||--o{ sessions : "mfa_verified_at"
   users ||--o| user_mfa : "segredo TOTP criptografado"
   users ||--o{ mfa_recovery_codes : "só HMAC"
+  users ||--o{ user_identities : "Google (sub)"
   users ||--o{ consents : ""
   users ||--o| payout_accounts : "CPF/PIX criptografados"
   brands ||--o{ campaigns : ""

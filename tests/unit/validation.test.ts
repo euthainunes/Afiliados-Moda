@@ -48,6 +48,14 @@ describe("redirecionamento seguro", () => {
     expect(safeNext("/\\malicioso.example")).toBe("/app");
     expect(safeNext(undefined, "/admin")).toBe("/admin");
   });
+
+  it("recusa truques com caracteres de controle que o navegador descarta", () => {
+    for (const evil of ["/\t/malicioso.example", "/\n/malicioso.example", "/\r\n/malicioso.example", "/ /malicioso.example", "/\u0000/x", "\\malicioso.example"]) {
+      expect(safeNext(evil)).toBe("/app");
+    }
+    expect(safeNext("/app/recompensas?aba=extrato#topo")).toBe("/app/recompensas?aba=extrato#topo");
+    expect(safeNext("/%2F%2Fmalicioso.example")).toBe("/%2F%2Fmalicioso.example"); // continua um caminho interno
+  });
 });
 
 describe("mascaramento de dados pessoais", () => {

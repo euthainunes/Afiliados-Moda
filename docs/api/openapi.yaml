@@ -113,6 +113,20 @@ paths:
       responses:
         "200": { description: "Resumo {eligibility, reconciliation}" }
         "401": { description: Não autorizado }
+  /api/auth/google:
+    get:
+      summary: Inicia o login com Google (redireciona ao Google). 404 quando não configurado.
+      parameters:
+        - { name: next, in: query, schema: { type: string }, description: Caminho interno de destino após o login }
+      responses:
+        "302": { description: Redireciona para accounts.google.com }
+        "404": { description: Login com Google não configurado }
+  /api/auth/google/callback:
+    get:
+      summary: Volta do Google (code + state). Abre sessão, vincula conta ou leva a /cadastro/google.
+      responses:
+        "302": { description: "Para /app, /admin, /entrar/verificacao, /cadastro/google ou /entrar?google=<motivo>" }
+        "404": { description: Login com Google não configurado }
   /api/cron/limpeza:
     get:
       summary: Rotina diária de retenção (sessões, links de e-mail, limites de tentativa, contatos antigos)

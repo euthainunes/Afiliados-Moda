@@ -7,6 +7,8 @@ import { slugify } from "@/lib/text";
 import { assertCan, type Principal } from "@/modules/access/can";
 import { recordAudit } from "@/modules/audit/service";
 import { newTrackingCode } from "@/modules/tracking/ids";
+import { RATE_LIMITS } from "@/modules/identity/policies";
+import { consumeRateLimit } from "@/modules/identity/rate-limit";
 
 // Regras de composição e publicação (docs/02 §4.2). Ajustáveis aqui, num único lugar.
 export const LOOK_RULES = {
@@ -53,7 +55,14 @@ async function ensureTrackingLink(tx: Tx, look: { id: string; userId: string }, 
     .onConflictDoNothing({ target: [trackingLinks.lookId, trackingLinks.productId] });
 }
 
+// Teto de rascunhos por conta: o montador não é armazenamento ilimitado.
+export const MAX_DRAFT_LOOKS = 50;
+
 export async function createLook(userId: string, firstProductId?: string): Promise<string> {
+  const limit = await consumeRateLimit(`looks:user:${userId}`, RATE_LIMITS.looksPerUser);
+  if (!limit.ok) throw new LookError("Você criou muitos looks na última hora. Tente de novo mais tarde.");
+  const [{ drafts }] = await db.select({ drafts: count() }).from(looks).where(and(eq(looks.userId, userId), eq(looks.status, "draft")));
+  if (drafts >= MAX_DRAFT_LOOKS) throw new LookError(`Você já tem ${MAX_DRAFT_LOOKS} rascunhos. Publique ou apague alguns antes de criar outro.`);
   return db.transaction(async (tx) => {
     const [look] = await tx.insert(looks).values({ userId }).returning({ id: looks.id });
     if (firstProductId) await addItemTx(tx, userId, look.id, firstProductId);

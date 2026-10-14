@@ -52,7 +52,7 @@ export async function listSettings(actor: Principal) {
 
 export async function updateSetting(actor: Principal, key: string, raw: unknown): Promise<void> {
   assertCan(actor, "settings.manage");
-  if (!(key in SETTINGS)) throw new Error("Parâmetro desconhecido.");
+  if (!Object.hasOwn(SETTINGS, key)) throw new Error("Parâmetro desconhecido.");
   const k = key as SettingKey;
   const value = SETTINGS[k].schema.parse(raw);
   const before = await getSetting(k);

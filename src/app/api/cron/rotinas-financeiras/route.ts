@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { cronUnauthorized } from "@/lib/cron";
 import { runEligibility, runReconciliation } from "@/modules/finance/operations";
+import { logEvent } from "@/lib/observability";
 
 // Rotina diária: libera recompensas elegíveis e procura divergências financeiras.
 export async function GET(request: NextRequest) {
@@ -8,6 +9,6 @@ export async function GET(request: NextRequest) {
   if (denied) return denied;
   const reconciliation = await runReconciliation();
   const eligibility = await runEligibility();
-  console.info("[cron] rotinas financeiras", { eligibility, reconciliation });
+  logEvent("info", "cron.rotinas_financeiras", { eligibility, reconciliation });
   return NextResponse.json({ eligibility, reconciliation });
 }

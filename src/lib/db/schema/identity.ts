@@ -137,3 +137,20 @@ export const mfaRecoveryCodes = pgTable(
   },
   (t) => [index("mfa_recovery_codes_user_idx").on(t.userId)],
 );
+
+// Contas externas vinculadas (login social). A ligação é pelo identificador estável do provedor ("sub"),
+// não pelo e-mail, que pode mudar.
+export const userIdentities = pgTable(
+  "user_identities",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(),
+    subject: text("subject").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  },
+  (t) => [uniqueIndex("user_identities_provider_subject_idx").on(t.provider, t.subject), uniqueIndex("user_identities_user_provider_idx").on(t.userId, t.provider)],
+);

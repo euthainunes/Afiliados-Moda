@@ -57,6 +57,13 @@
       "when": 1791923233026,
       "tag": "0007_mfa_and_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791969885180,
+      "tag": "0008_social_login",
+      "breakpoints": true
     }
   ]
 }

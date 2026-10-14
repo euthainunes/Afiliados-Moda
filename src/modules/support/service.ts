@@ -5,6 +5,8 @@ import { profiles, supportMessages, supportTickets } from "@/lib/db/schema";
 import { assertCan, type Principal } from "@/modules/access/can";
 import { recordAudit } from "@/modules/audit/service";
 import { notify } from "@/modules/notifications/service";
+import { RATE_LIMITS } from "@/modules/identity/policies";
+import { consumeRateLimit } from "@/modules/identity/rate-limit";
 
 export const CATEGORY_LABELS = {
   conta: "Conta e acesso",
@@ -27,8 +29,17 @@ export const publicContactSchema = ticketSchema.extend({
   email: z.email({ error: "Informe um e-mail válido." }).max(254),
 });
 
+export class SupportError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SupportError";
+  }
+}
+
 export async function openTicket(userId: string, input: z.input<typeof ticketSchema>) {
   const data = ticketSchema.parse(input);
+  const limit = await consumeRateLimit(`tickets:user:${userId}`, RATE_LIMITS.ticketsPerUser);
+  if (!limit.ok) throw new SupportError("Você abriu vários atendimentos seguidos. Aguarde a resposta ou tente de novo mais tarde.");
   return db.transaction(async (tx) => {
     const [ticket] = await tx.insert(supportTickets).values({ userId, category: data.category, subject: data.subject }).returning();
     await tx.insert(supportMessages).values({ ticketId: ticket.id, authorId: userId, body: data.body });
@@ -67,10 +78,10 @@ export async function getTicket(viewer: Principal, ticketId: string) {
 
 export async function replyTicket(viewer: Principal, ticketId: string, body: string) {
   const text = body.trim();
-  if (text.length < 2 || text.length > 4000) throw new Error("Mensagem inválida.");
+  if (text.length < 2 || text.length > 4000) throw new SupportError("Mensagem inválida.");
   const data = await getTicket(viewer, ticketId);
-  if (!data) throw new Error("Atendimento não encontrado.");
-  if (data.ticket.status === "closed") throw new Error("Este atendimento está encerrado. Abra um novo, se precisar.");
+  if (!data) throw new SupportError("Atendimento não encontrado.");
+  if (data.ticket.status === "closed") throw new SupportError("Este atendimento está encerrado. Abra um novo, se precisar.");
   const fromStaff = data.ticket.userId !== viewer.id;
   if (fromStaff) assertCan(viewer, "users.read");
   await db.transaction(async (tx) => {
@@ -84,7 +95,7 @@ export async function replyTicket(viewer: Principal, ticketId: string, body: str
 
 export async function closeTicket(viewer: Principal, ticketId: string) {
   const data = await getTicket(viewer, ticketId);
-  if (!data) throw new Error("Atendimento não encontrado.");
+  if (!data) throw new SupportError("Atendimento não encontrado.");
   await db.update(supportTickets).set({ status: "closed" }).where(eq(supportTickets.id, ticketId));
   if (data.ticket.userId !== viewer.id) await recordAudit({ actorId: viewer.id, actorRoles: viewer.roles, action: "support.closed", entityType: "support_ticket", entityId: ticketId });
 }

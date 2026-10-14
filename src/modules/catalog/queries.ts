@@ -3,6 +3,8 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { brands, categories, favorites, products, productVariants } from "@/lib/db/schema";
 import { normalizeText } from "@/lib/text";
+import { RATE_LIMITS } from "@/modules/identity/policies";
+import { consumeRateLimit } from "@/modules/identity/rate-limit";
 
 export const SORTS = ["relevancia", "menor-preco", "maior-preco", "novidades"] as const;
 
@@ -164,6 +166,8 @@ export async function toggleFavorite(userId: string, productId: string): Promise
     .where(and(eq(favorites.userId, userId), eq(favorites.productId, productId)))
     .returning({ productId: favorites.productId });
   if (removed.length > 0) return false;
+  // Remover é sempre permitido; adicionar tem teto por hora contra automação.
+  if (!(await consumeRateLimit(`favorites:user:${userId}`, RATE_LIMITS.favoritesPerUser)).ok) return false;
   const product = await db.query.products.findFirst({ where: eq(products.id, productId) });
   if (!product) throw new Error("Produto não encontrado.");
   await db.insert(favorites).values({ userId, productId }).onConflictDoNothing();

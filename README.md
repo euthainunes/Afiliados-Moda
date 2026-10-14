@@ -40,3 +40,6 @@ Qualidade: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:
 | [14 — Produção, dependências e limitações](docs/14-producao-dependencias-e-limitacoes.md) | Arquitetura atual, checklist de produção, pendências externas, testes |
 
 > Percentuais comerciais (25% / 20 p.p. / 5 p.p.) são premissas sujeitas a contrato: existem apenas numa regra **fictícia** de demonstração e, para marcas reais, são cadastrados e aprovados no painel.
+
+## Backup e restauração
+`scripts/backup-restore-check.sh <URL_DO_BANCO>` gera um dump, restaura numa base temporária e confere tabelas, migrações e livro-razão (ver docs/14, checklist de produção).
