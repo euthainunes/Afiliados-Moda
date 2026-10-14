@@ -5,7 +5,7 @@ import { buttonClasses } from "@/components/ui/button";
 
 export type NavItem = { href: string; label: string };
 
-// Estrutura comum à área da usuária e ao painel. A navegação inferior no celular entra na Fase 4 com o montador.
+// Estrutura comum à área da usuária e ao painel.
 export function AppShell({
   nav,
   mobileNav,
@@ -25,7 +25,7 @@ export function AppShell({
   return (
     <>
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 lg:gap-x-5">
           <Link href="/" className="font-display text-xl font-semibold">
             {site.name}
           </Link>
@@ -35,7 +35,7 @@ export function AppShell({
             className={mobileNav ? "hidden flex-wrap gap-1 sm:flex" : "order-last flex w-full gap-1 overflow-x-auto sm:flex-wrap"}
           >
             {nav.map((item) => (
-              <Link key={item.href} href={item.href} className={buttonClasses("ghost", "sm")}>
+              <Link key={item.href} href={item.href} className={buttonClasses("ghost", "sm", "lg:px-2.5")}>
                 {item.label}
               </Link>
             ))}
@@ -47,7 +47,8 @@ export function AppShell({
                 {notifications.unread > 0 && <span className="rounded-full bg-brand px-1.5 text-xs text-brand-ink">{notifications.unread > 99 ? "99+" : notifications.unread}</span>}
               </Link>
             )}
-            <span className="hidden text-muted sm:inline">{userName}</span>
+            {/* Na área da usuária o nome fica em "Conta"; no painel ele identifica quem está operando. */}
+            <span className={area ? "hidden text-muted sm:inline" : "sr-only"}>{userName}</span>
             <form action={logoutAction}>
               <button type="submit" className={buttonClasses("secondary", "sm")}>
                 Sair

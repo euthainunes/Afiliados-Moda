@@ -57,8 +57,16 @@ export function ColumnChart({ title, points, color = "var(--brand)", unit }: { t
             );
           })}
           <line x1={padL} x2={W} y1={H - padB} y2={H - padB} stroke="var(--muted)" strokeWidth={1} />
-          {[0, Math.floor(points.length / 2), points.length - 1].map((i) => (
-            <text key={i} x={padL + band * i + band / 2} y={H - 6} textAnchor="middle" fontSize={11} fill="var(--muted)">
+          {/* Primeiro e último rótulos alinhados às bordas do gráfico, para não serem cortados. */}
+          {[0, Math.floor(points.length / 2), points.length - 1].map((i, k) => (
+            <text
+              key={i}
+              x={k === 0 ? padL : k === 2 ? W : padL + band * i + band / 2}
+              y={H - 6}
+              textAnchor={k === 0 ? "start" : k === 2 ? "end" : "middle"}
+              fontSize={11}
+              fill="var(--muted)"
+            >
               {points[i]?.label}
             </text>
           ))}
