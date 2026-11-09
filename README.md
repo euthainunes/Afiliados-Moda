@@ -43,3 +43,6 @@ Qualidade: `pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm test:
 
 ## Backup e restauração
 `scripts/backup-restore-check.sh <URL_DO_BANCO>` gera um dump, restaura numa base temporária e confere tabelas, migrações e livro-razão (ver docs/14, checklist de produção).
+
+## Homologação
+Passo a passo para publicar o ambiente de testes na Vercel: [docs/15-homologacao-vercel.md](docs/15-homologacao-vercel.md).
