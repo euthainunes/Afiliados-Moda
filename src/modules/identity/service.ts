@@ -25,7 +25,7 @@ function link(path: string, token: string) {
   return `${env().APP_URL}${path}?token=${encodeURIComponent(token)}`;
 }
 
-async function issueToken(userId: string, type: TokenType): Promise<string> {
+export async function issueToken(userId: string, type: TokenType): Promise<string> {
   // Invalida tokens anteriores do mesmo tipo: só o link mais recente funciona.
   await db
     .update(authTokens)
@@ -42,7 +42,7 @@ async function issueToken(userId: string, type: TokenType): Promise<string> {
 }
 
 // Consome um token de uso único de forma atômica (o UPDATE condicional impede uso duplo concorrente).
-async function consumeToken(token: string, type: TokenType): Promise<string | null> {
+export async function consumeToken(token: string, type: TokenType): Promise<string | null> {
   const [row] = await db
     .update(authTokens)
     .set({ usedAt: new Date() })
@@ -110,7 +110,7 @@ type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 // Cria usuária, perfil, papel e registros de aceite numa única transação. `onCreated` roda na mesma
 // transação (ex.: vincular a conta Google).
 export async function createAccount(
-  input: { email: string; displayName: string; passwordHash: string; emailVerifiedAt?: Date | null },
+  input: { email: string; displayName: string; passwordHash: string; emailVerifiedAt?: Date | null; hasPassword?: boolean },
   ctx: RequestContext = {},
   onCreated?: (tx: Tx, userId: string) => Promise<void>,
 ): Promise<string> {
@@ -118,7 +118,7 @@ export async function createAccount(
   return db.transaction(async (tx) => {
     const [user] = await tx
       .insert(users)
-      .values({ email: input.email, passwordHash: input.passwordHash, emailVerifiedAt: input.emailVerifiedAt ?? null })
+      .values({ email: input.email, passwordHash: input.passwordHash, emailVerifiedAt: input.emailVerifiedAt ?? null, hasPassword: input.hasPassword ?? true })
       .returning({ id: users.id });
     // Nome de usuária gerado automaticamente; poderá ser editado no perfil.
     let username = base;
@@ -242,7 +242,7 @@ export async function resetPassword(token: string, newPassword: string, ctx: Req
   // Quem recebeu o link comprovou acesso ao e-mail: marca como verificado.
   await db
     .update(users)
-    .set({ passwordHash, emailVerifiedAt: sql`coalesce(${users.emailVerifiedAt}, now())` })
+    .set({ passwordHash, hasPassword: true, emailVerifiedAt: sql`coalesce(${users.emailVerifiedAt}, now())` })
     .where(eq(users.id, userId));
   await revokeAllSessions(userId);
   await recordAudit({ actorId: userId, action: "user.password_reset", entityType: "user", entityId: userId, ipHash: ctx.ipHash });

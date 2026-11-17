@@ -71,7 +71,7 @@ export async function signInWithGoogle(claims: GoogleClaims, ctx: RequestContext
       // Uma conta só pode ter uma conta Google; um "sub" só pode estar em uma conta (índices únicos).
       await tx.insert(userIdentities).values({ userId: target.id, provider: GOOGLE_PROVIDER, subject: claims.sub });
       if (unverified && unusable) {
-        await tx.update(users).set({ emailVerifiedAt: new Date(), passwordHash: unusable }).where(eq(users.id, target.id));
+        await tx.update(users).set({ emailVerifiedAt: new Date(), passwordHash: unusable, hasPassword: false }).where(eq(users.id, target.id));
         await tx.update(sessions).set({ revokedAt: new Date() }).where(and(eq(sessions.userId, target.id), isNull(sessions.revokedAt)));
       }
       await recordAudit(
@@ -112,7 +112,7 @@ export async function completeGoogleSignup(pending: string | undefined, raw: unk
   if (existing) throw new SocialSignupError("Já existe uma conta com este e-mail. Entre com o Google novamente para vinculá-la.");
 
   const userId = await createAccount(
-    { email: claims.email, displayName: input.displayName, passwordHash: await hashPassword(randomToken(32)), emailVerifiedAt: new Date() },
+    { email: claims.email, displayName: input.displayName, passwordHash: await hashPassword(randomToken(32)), emailVerifiedAt: new Date(), hasPassword: false },
     ctx,
     async (tx, id) => {
       await tx.insert(userIdentities).values({ userId: id, provider: GOOGLE_PROVIDER, subject: claims.sub, lastUsedAt: new Date() });

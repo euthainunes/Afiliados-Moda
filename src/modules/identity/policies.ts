@@ -19,6 +19,7 @@ export const SESSION_POLICY = {
 export const TOKEN_TTL = {
   email_verification: 48 * 3600_000,
   password_reset: 30 * 60_000,
+  account_deletion: 30 * 60_000,
 } as const;
 
 // Limites de tentativas (janela fixa).

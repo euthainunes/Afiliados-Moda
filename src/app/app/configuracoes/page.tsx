@@ -9,7 +9,7 @@ import { revokeOtherSessionsAction, revokeSessionAction } from "./actions";
 import { ChangePasswordForm } from "./change-password-form";
 import { DeleteAccountForm, EmailPreferenceForm, ProfileForm } from "./privacy-forms";
 import { db } from "@/lib/db";
-import { profiles } from "@/lib/db/schema";
+import { profiles, users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 export const metadata: Metadata = { title: "Conta e privacidade" };
@@ -27,6 +27,7 @@ export default async function SettingsPage() {
   const session = await requireSession("/app/configuracoes");
   const activeSessions = await listActiveSessions(session.user.id);
   const [profile] = await db.select().from(profiles).where(eq(profiles.userId, session.user.id));
+  const [account] = await db.select({ hasPassword: users.hasPassword }).from(users).where(eq(users.id, session.user.id));
 
   return (
     <>
@@ -50,8 +51,15 @@ export default async function SettingsPage() {
         </Card>
 
         <Card aria-labelledby="senha">
-          <h2 id="senha" className="mb-4 text-lg font-semibold">Alterar senha</h2>
-          <ChangePasswordForm />
+          <h2 id="senha" className="mb-4 text-lg font-semibold">{account.hasPassword ? "Alterar senha" : "Criar senha"}</h2>
+          {account.hasPassword ? (
+            <ChangePasswordForm />
+          ) : (
+            <p className="text-sm text-muted">
+              Você entra pelo Google e ainda não tem senha. Para poder entrar também com e-mail e senha, use{" "}
+              <Link href="/recuperar-senha" className="font-medium text-ink underline">criar uma senha</Link>: enviamos um link ao seu e-mail.
+            </p>
+          )}
         </Card>
 
         <Card aria-labelledby="avisos-email">
@@ -112,7 +120,7 @@ export default async function SettingsPage() {
             <p className="mt-1 mb-4 text-sm text-muted">
               Sua conta é anonimizada, seus looks saem do ar e seus dados de recebimento são apagados. Registros financeiros são mantidos sem identificação pelo prazo exigido por lei. Recompensas ainda não resgatadas são perdidas, conforme o regulamento.
             </p>
-            <DeleteAccountForm />
+            <DeleteAccountForm hasPassword={account.hasPassword} />
           </div>
         </Card>
       </div>

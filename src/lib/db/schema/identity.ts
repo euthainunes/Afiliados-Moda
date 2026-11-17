@@ -30,6 +30,8 @@ export const users = pgTable("users", {
   email: citext("email").notNull().unique(),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   passwordHash: text("password_hash").notNull(),
+  // false quando a conta nunca definiu senha (criada pelo Google) ou teve a senha invalidada.
+  hasPassword: boolean("has_password").notNull().default(true),
   status: userStatus("status").notNull().default("active"),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   ...timestamps,
@@ -73,7 +75,7 @@ export const sessions = pgTable(
   (t) => [index("sessions_user_idx").on(t.userId), index("sessions_expires_idx").on(t.expiresAt)],
 );
 
-export const authTokenType = pgEnum("auth_token_type", ["email_verification", "password_reset"]);
+export const authTokenType = pgEnum("auth_token_type", ["email_verification", "password_reset", "account_deletion"]);
 
 export const authTokens = pgTable(
   "auth_tokens",

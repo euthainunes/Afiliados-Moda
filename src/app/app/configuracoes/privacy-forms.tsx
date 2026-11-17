@@ -6,7 +6,7 @@ import { FormMessage } from "@/components/ui/form-message";
 import { TextareaField } from "@/components/ui/select-field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState } from "@/lib/form-state";
-import { deleteAccountAction, updateEmailPreferenceAction, updateProfileAction } from "./actions";
+import { deleteAccountAction, requestDeletionLinkAction, updateEmailPreferenceAction, updateProfileAction } from "./actions";
 
 export function ProfileForm({ defaults }: { defaults: { displayName: string; username: string; bio: string } }) {
   const [state, action] = useActionState(updateProfileAction, initialFormState);
@@ -23,14 +23,34 @@ export function ProfileForm({ defaults }: { defaults: { displayName: string; use
   );
 }
 
-export function DeleteAccountForm() {
+export function DeleteAccountForm({ hasPassword }: { hasPassword: boolean }) {
   const [state, action] = useActionState(deleteAccountAction, initialFormState);
   return (
-    <form action={action} className="flex max-w-xl flex-col gap-4">
+    <div className="flex max-w-xl flex-col gap-6">
+      {hasPassword && (
+        <form action={action} className="flex flex-col gap-4">
+          <FormMessage state={state} />
+          <Field idPrefix="excluir" name="password" label="Sua senha" type="password" required autoComplete="current-password" />
+          <Field idPrefix="excluir" name="confirmation" label='Digite "EXCLUIR" para confirmar' required autoComplete="off" />
+          <SubmitButton variant="danger" className="self-start" pendingLabel="Excluindo…">Excluir minha conta</SubmitButton>
+        </form>
+      )}
+      <DeletionLinkForm hasPassword={hasPassword} />
+    </div>
+  );
+}
+
+function DeletionLinkForm({ hasPassword }: { hasPassword: boolean }) {
+  const [state, action] = useActionState(requestDeletionLinkAction, initialFormState);
+  return (
+    <form action={action} className="flex flex-col gap-3">
+      <p className="text-sm text-muted">
+        {hasPassword
+          ? "Esqueceu a senha? Você também pode confirmar a exclusão por um link enviado ao seu e-mail."
+          : "Sua conta não tem senha (você entra pelo Google). Para confirmar que é você, enviamos um link ao seu e-mail, válido por 30 minutos."}
+      </p>
       <FormMessage state={state} />
-      <Field idPrefix="excluir" name="password" label="Sua senha" type="password" required autoComplete="current-password" />
-      <Field idPrefix="excluir" name="confirmation" label='Digite "EXCLUIR" para confirmar' required autoComplete="off" />
-      <SubmitButton variant="danger" className="self-start" pendingLabel="Excluindo…">Excluir minha conta</SubmitButton>
+      <SubmitButton variant={hasPassword ? "ghost" : "danger"} className="self-start" pendingLabel="Enviando…">Enviar link de exclusão por e-mail</SubmitButton>
     </form>
   );
 }
