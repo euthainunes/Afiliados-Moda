@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { clearSessionCookie, getPendingMfaSession, getSession, readSessionToken, requestContext, safeNext, setSessionCookie } from "@/lib/auth/current";
 import type { FormState } from "@/lib/form-state";
+import { homeFor } from "@/modules/access/can";
 import {
   login,
   requestPasswordReset,
@@ -59,7 +60,7 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
     const next = typeof raw.next === "string" && raw.next ? `?next=${encodeURIComponent(safeNext(raw.next))}` : "";
     redirect(`/entrar/verificacao${next}`);
   }
-  redirect(safeNext(raw.next, result.staff ? "/admin" : "/app"));
+  redirect(safeNext(raw.next, result.home));
 }
 
 export async function mfaChallengeAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -76,7 +77,7 @@ export async function mfaChallengeAction(_prev: FormState, formData: FormData): 
       : { status: "error", fieldErrors: { code: ["Código incorreto ou expirado. Use o código que aparece agora no app."] } };
   }
   await setSessionCookie(token, result.expiresAt);
-  const fallback = result.staff ? "/admin" : "/app";
+  const fallback = result.home;
   redirect(result.usedRecoveryCode ? `/app/configuracoes/seguranca?aviso=codigo-usado` : safeNext(formData.get("next"), fallback));
 }
 
@@ -119,7 +120,7 @@ export async function logoutAction(): Promise<void> {
 // Usado pela página de login: quem já está autenticado é levado direto à sua área.
 export async function redirectIfAuthenticated(next?: string) {
   const session = await getSession();
-  if (session) redirect(safeNext(next, "/app"));
+  if (session) redirect(safeNext(next, homeFor(session.roles)));
   if (await getPendingMfaSession()) redirect(`/entrar/verificacao${next ? `?next=${encodeURIComponent(next)}` : ""}`);
 }
 

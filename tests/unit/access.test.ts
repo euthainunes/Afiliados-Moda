@@ -37,8 +37,8 @@ describe("RBAC", () => {
     expect(can(operator, "ledger.adjust.propose")).toBe(true);
   });
 
-  it("representante de marca não tem permissões administrativas no MVP", () => {
-    expect(permissionsOf(["brand_rep"]).size).toBe(0);
+  it("representante de marca só abre o portal da marca, sem nenhuma permissão administrativa", () => {
+    expect([...permissionsOf(["brand_rep"])]).toEqual(["brand_portal.access"]);
   });
 
   it("só referencia permissões existentes", () => {

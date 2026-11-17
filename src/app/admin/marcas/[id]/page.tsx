@@ -8,7 +8,11 @@ import { requirePermission, toPrincipal } from "@/lib/auth/current";
 import { dateFmt } from "@/lib/dates";
 import { can } from "@/modules/access/can";
 import { getBrand } from "@/modules/commercial/service";
-import { BrandForm, CampaignForm, FeedForm } from "../forms";
+import { ActionForm } from "@/components/ui/action-form";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { listBrandMembers } from "@/modules/brand-portal/service";
+import { revokeBrandAccessAction } from "../actions";
+import { BrandAccessForm, BrandForm, CampaignForm, FeedForm } from "../forms";
 
 export const metadata: Metadata = { title: "Marca" };
 
@@ -21,6 +25,7 @@ export default async function BrandPage({ params }: { params: Promise<{ id: stri
   const data = await getBrand(principal, id);
   if (!data) notFound();
   const { brand, feeds, campaigns } = data;
+  const members = await listBrandMembers(principal, brand.id);
   const params_ = Object.entries(brand.trackingConfig.params ?? {}).map(([k, v]) => `${k}=${v}`).join("\n");
 
   return (
@@ -100,6 +105,32 @@ export default async function BrandPage({ params }: { params: Promise<{ id: stri
             </div>
           </details>
         )}
+      </Card>
+
+      <Card aria-labelledby="portal">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="portal" className="text-lg font-semibold">Acesso da marca ao portal</h2>
+          <Link href={`/marca/${brand.slug}`} className="text-sm underline">Ver o portal como a marca vê</Link>
+        </div>
+        <p className="mb-4 mt-1 text-sm text-muted">
+          Pessoas da marca veem, somente leitura, cliques, vendas atribuídas (sem dados de quem comprou), comissão e faturas desta marca. A conta precisa existir e ter e-mail confirmado; onde a verificação em duas etapas é obrigatória, ela precisa ativá-la.
+        </p>
+        {members.length > 0 && (
+          <ul className="mb-4 divide-y divide-line">
+            {members.map((m) => (
+              <li key={m.userId} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                <div>
+                  <p className="font-medium">{m.name}</p>
+                  <p className="text-muted">{m.email} · desde {dateFmt.format(m.grantedAt)}</p>
+                </div>
+                <ActionForm action={revokeBrandAccessAction} hidden={{ brandId: brand.id, userId: m.userId }}>
+                  <SubmitButton size="sm" variant="ghost" pendingLabel="Removendo…" className="self-start">Remover acesso</SubmitButton>
+                </ActionForm>
+              </li>
+            ))}
+          </ul>
+        )}
+        <BrandAccessForm brandId={brand.id} />
       </Card>
     </div>
   );

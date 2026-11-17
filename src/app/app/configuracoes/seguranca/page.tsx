@@ -8,7 +8,7 @@ import { Card, PageTitle } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/current";
 import { dateFmt } from "@/lib/dates";
 import { staffMfaRequired } from "@/lib/env";
-import { isStaff } from "@/modules/access/can";
+import { requiresMfa } from "@/modules/access/can";
 import { getMfaStatus } from "@/modules/identity/mfa";
 import { cancelEnrollmentAction, startEnrollmentAction } from "./actions";
 import { ConfirmEnrollmentForm, DisableMfaForm, RegenerateCodesForm } from "./forms";
@@ -25,7 +25,7 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
   const session = await requireSession("/app/configuracoes/seguranca");
   const status = await getMfaStatus(session.user.id);
   // Papéis efetivos podem estar suspensos (sem MFA); a exigência vale para quem é da equipe de fato.
-  const staffLocked = (session.mfa.enrollmentRequired || isStaff(session.roles)) && staffMfaRequired();
+  const staffLocked = (session.mfa.enrollmentRequired || requiresMfa(session.roles)) && staffMfaRequired();
   const qr = status.state === "enrolling" ? await QRCode.toDataURL(status.uri, { margin: 1, width: 220 }) : null;
 
   return (
@@ -33,8 +33,8 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
       <PageTitle description="Proteja sua conta com um código do celular além da senha.">Segurança da conta</PageTitle>
       <div className="flex flex-col gap-6">
         {session.mfa.enrollmentRequired && (
-          <Alert tone="warning" title="Ative a verificação em duas etapas para acessar o painel interno">
-            Contas da equipe precisam do segundo fator. Enquanto ele não estiver ativo, o painel fica bloqueado para esta conta.
+          <Alert tone="warning" title="Ative a verificação em duas etapas para continuar">
+            Contas da equipe e de marcas parceiras precisam do segundo fator. Enquanto ele não estiver ativo, o painel interno e o portal da marca ficam bloqueados para esta conta.
           </Alert>
         )}
         {params.aviso === "codigo-usado" && (
@@ -96,7 +96,7 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
               <section aria-labelledby="desativar">
                 <h3 id="desativar" className="mb-2 font-semibold">Desativar</h3>
                 {staffLocked ? (
-                  <p className="text-muted">Contas da equipe não podem desativar a verificação em duas etapas. Em caso de troca de celular, gere novos códigos ou peça a outra administradora para redefinir.</p>
+                  <p className="text-muted">Contas da equipe e de marcas parceiras não podem desativar a verificação em duas etapas. Em caso de troca de celular, gere novos códigos ou peça a outra administradora para redefinir.</p>
                 ) : (
                   <DisableMfaForm />
                 )}

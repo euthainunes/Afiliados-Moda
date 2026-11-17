@@ -6,7 +6,7 @@ import { FormMessage } from "@/components/ui/form-message";
 import { SelectField, TextareaField } from "@/components/ui/select-field";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialFormState } from "@/lib/form-state";
-import { proposeRuleAction, saveBrandAction, saveCampaignAction, saveFeedAction } from "./actions";
+import { grantBrandAccessAction, proposeRuleAction, saveBrandAction, saveCampaignAction, saveFeedAction } from "./actions";
 
 export type BrandDefaults = {
   brandId?: string;
@@ -120,6 +120,20 @@ export function RuleForm({ brandId, campaignId, baseLabels, startLabels }: { bra
       <Field idPrefix="regra" name="contractReference" label="Referência do contrato ou confirmação formal" defaultValue={v.contractReference} hint="Obrigatória para aprovar. Ex.: contrato assinado em dd/mm/aaaa, cláusula X." errors={e.contractReference} />
       <TextareaField idPrefix="regra" name="notes" label="Observações" rows={2} defaultValue={v.notes} errors={e.notes} />
       <SubmitButton className="self-start" pendingLabel="Enviando…">Propor regra</SubmitButton>
+    </form>
+  );
+}
+
+export function BrandAccessForm({ brandId }: { brandId: string }) {
+  const [state, action] = useActionState(grantBrandAccessAction, initialFormState);
+  return (
+    <form action={action} className="flex flex-col gap-3" noValidate>
+      <FormMessage state={state} />
+      <input type="hidden" name="brandId" value={brandId} />
+      <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+        <Field idPrefix="acesso-marca" name="email" label="E-mail da pessoa da marca" type="email" required />
+        <SubmitButton pendingLabel="Concedendo…">Conceder acesso</SubmitButton>
+      </div>
     </form>
   );
 }

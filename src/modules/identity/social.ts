@@ -15,7 +15,7 @@ export const GOOGLE_PROVIDER = "google";
 const PENDING_TTL_MS = 15 * 60_000;
 
 export type SocialSignInResult =
-  | { kind: "session"; token: string; expiresAt: Date; staff: boolean; mfaRequired: boolean; linked: boolean }
+  | { kind: "session"; token: string; expiresAt: Date; staff: boolean; mfaRequired: boolean; home: string; linked: boolean }
   | { kind: "needs_signup"; pending: string }
   | { kind: "refused"; reason: "suspended" | "deleted" };
 

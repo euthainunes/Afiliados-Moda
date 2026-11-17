@@ -23,7 +23,7 @@ export async function createUser({ roles = ["user"], verified = true }: { roles?
     .values({ email, passwordHash: await hashPassword(TEST_PASSWORD), emailVerifiedAt: verified ? new Date() : null })
     .returning();
   await db.insert(profiles).values({ userId: user.id, displayName: "Pessoa Fictícia", username: `f_${user.id.slice(0, 12)}` });
-  await db.insert(userRoles).values(roles.map((role) => ({ userId: user.id, role })));
+  if (roles.length) await db.insert(userRoles).values(roles.map((role) => ({ userId: user.id, role })));
   return { ...user, roles, principal: { id: user.id, roles } };
 }
 

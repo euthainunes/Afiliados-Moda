@@ -117,3 +117,25 @@ test("contato público valida e registra a mensagem", async ({ page }) => {
   await page.getByRole("button", { name: "Enviar" }).click();
   await expect(page.getByText("Mensagem recebida!")).toBeVisible();
 });
+
+test("marca parceira vê o próprio portal, somente leitura, e nada além dele", async ({ page }) => {
+  await page.goto("/entrar");
+  await page.getByLabel("E-mail", { exact: true }).first().fill("marca@exemplo.test");
+  await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page).toHaveURL(/\/marca\/marca-ficticia$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Marca Fictícia" })).toBeVisible();
+  await expect(page.getByText("Vendas atribuídas", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("demonstração").first()).toBeVisible();
+
+  await page.getByRole("link", { name: "Vendas", exact: true }).first().click();
+  await expect(page.getByRole("heading", { name: "Vendas atribuídas" })).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "Pedido" })).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: /recompensa|criadora recebe|plataforma/i })).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Faturas", exact: true }).first().click();
+  await expect(page.getByRole("heading", { name: "Faturas" })).toBeVisible();
+
+  expect((await page.goto("/marca/outra-marca"))?.status()).toBe(404);
+  expect((await page.goto("/admin"))?.status()).toBe(404);
+});

@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import { profiles, sessions, userMfa, userRoles, users } from "@/lib/db/schema";
 import { randomToken, sha256 } from "@/lib/crypto";
 import { staffMfaRequired } from "@/lib/env";
-import { isStaff } from "@/modules/access/can";
-import { STAFF_ROLES, type Role } from "@/modules/access/permissions";
+import { isStaff, requiresMfa } from "@/modules/access/can";
+import { MFA_REQUIRED_ROLES, type Role } from "@/modules/access/permissions";
 import { SESSION_POLICY } from "./policies";
 
 export type SessionContext = { ipHash?: string | null; userAgent?: string | null };
@@ -75,8 +75,8 @@ export async function validateSessionToken(token: string, { allowPending = false
   if (pending && !allowPending) return null;
 
   const assignedRoles = await rolesOf(row.user.id);
-  const enrollmentRequired = !mfaEnabled && isStaff(assignedRoles) && staffMfaRequired();
-  const roles = pending || enrollmentRequired ? assignedRoles.filter((r) => !STAFF_ROLES.includes(r)) : assignedRoles;
+  const enrollmentRequired = !mfaEnabled && requiresMfa(assignedRoles) && staffMfaRequired();
+  const roles = pending || enrollmentRequired ? assignedRoles.filter((r) => !MFA_REQUIRED_ROLES.includes(r)) : assignedRoles;
   let expiresAt = row.session.expiresAt;
 
   // Expiração deslizante por inatividade, limitada pela expiração absoluta.

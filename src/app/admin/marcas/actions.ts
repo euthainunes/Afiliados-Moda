@@ -15,6 +15,7 @@ import {
   saveCampaign,
   saveFeed,
 } from "@/modules/commercial/service";
+import { BrandPortalError, grantBrandAccess, revokeBrandAccess } from "@/modules/brand-portal/service";
 import { fieldErrors } from "@/modules/identity/validation";
 
 const values = (fd: FormData) => Object.fromEntries([...fd.entries()].filter(([, v]) => typeof v === "string")) as Record<string, string>;
@@ -25,7 +26,7 @@ async function handle(fd: FormData, fn: () => Promise<void>, success: string): P
     await fn();
   } catch (error) {
     if (error instanceof z.ZodError) return { status: "error", fieldErrors: fieldErrors(error), values: values(fd) };
-    if (error instanceof CommercialError || error instanceof AccessDeniedError) return { status: "error", message: error.message, values: values(fd) };
+    if (error instanceof CommercialError || error instanceof BrandPortalError || error instanceof AccessDeniedError) return { status: "error", message: error.message, values: values(fd) };
     throw error;
   }
   return { status: "success", message: success };
@@ -88,4 +89,20 @@ export async function rejectRuleAction(_prev: FormState, fd: FormData): Promise<
   const state = await handle(fd, () => rejectRule(toPrincipal(session), String(fd.get("ruleId") ?? ""), String(fd.get("note") ?? "")), "Regra rejeitada.");
   revalidatePath(rulePath(fd));
   return state;
+}
+
+export async function grantBrandAccessAction(_prev: FormState, fd: FormData): Promise<FormState> {
+  const session = await requirePermission("brands.manage");
+  const brandId = String(fd.get("brandId") ?? "");
+  const result = await handle(fd, () => grantBrandAccess(toPrincipal(session), brandId, String(fd.get("email") ?? "")), "Acesso concedido. A pessoa precisa entrar de novo.");
+  revalidatePath(`/admin/marcas/${brandId}`);
+  return result;
+}
+
+export async function revokeBrandAccessAction(_prev: FormState, fd: FormData): Promise<FormState> {
+  const session = await requirePermission("brands.manage");
+  const brandId = String(fd.get("brandId") ?? "");
+  const result = await handle(fd, () => revokeBrandAccess(toPrincipal(session), brandId, String(fd.get("userId") ?? "")), "Acesso removido.");
+  revalidatePath(`/admin/marcas/${brandId}`);
+  return result;
 }

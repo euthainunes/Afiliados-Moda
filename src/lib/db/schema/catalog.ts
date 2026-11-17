@@ -204,3 +204,19 @@ export const favorites = pgTable(
   },
   (t) => [primaryKey({ columns: [t.userId, t.productId] })],
 );
+
+// Representantes de marca: quem pode ver o portal (somente leitura) de cada marca.
+export const brandMembers = pgTable(
+  "brand_members",
+  {
+    brandId: uuid("brand_id")
+      .notNull()
+      .references(() => brands.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    grantedBy: uuid("granted_by").references(() => users.id, { onDelete: "set null" }),
+    grantedAt: timestamp("granted_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.brandId, t.userId] }), index("brand_members_user_idx").on(t.userId)],
+);

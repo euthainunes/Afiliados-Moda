@@ -1,4 +1,4 @@
-import { ROLE_PERMISSIONS, STAFF_ROLES, type Permission, type Role } from "./permissions";
+import { MFA_REQUIRED_ROLES, ROLE_PERMISSIONS, STAFF_ROLES, type Permission, type Role } from "./permissions";
 
 export type Principal = { id: string; roles: readonly Role[] };
 
@@ -15,6 +15,17 @@ export function can(principal: Principal | null | undefined, permission: Permiss
 
 export function isStaff(roles: readonly Role[]): boolean {
   return roles.some((r) => STAFF_ROLES.includes(r));
+}
+
+export function requiresMfa(roles: readonly Role[]): boolean {
+  return roles.some((r) => MFA_REQUIRED_ROLES.includes(r));
+}
+
+// Para onde a pessoa vai depois do login, se não houver destino pedido.
+export function homeFor(roles: readonly Role[]): string {
+  if (isStaff(roles)) return "/admin";
+  if (roles.includes("brand_rep") && !roles.includes("user")) return "/marca";
+  return "/app";
 }
 
 // Checagem de propriedade: a usuária só age sobre recursos dela.

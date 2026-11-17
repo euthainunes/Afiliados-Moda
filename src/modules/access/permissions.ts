@@ -29,6 +29,8 @@ export const PERMISSIONS = [
   "reports.export",
   "audit.read",
   "settings.manage",
+  // Portal da marca (somente leitura). O escopo é a marca vinculada (brand_members), conferido nos serviços.
+  "brand_portal.access",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -56,12 +58,15 @@ export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   user: [],
   operator: OPERATOR,
   admin: PERMISSIONS,
-  // Portal da marca é pós-MVP; o escopo por marca será adicionado com ele.
-  brand_rep: [],
+  // Representante de marca: só o portal, restrito às marcas vinculadas.
+  brand_rep: ["brand_portal.access"],
 };
 
 // Papéis que dão acesso ao painel interno e, portanto, exigem sessão mais curta (e MFA, na Fase 3b).
 export const STAFF_ROLES: readonly Role[] = ["operator", "admin"];
+
+// Papéis que veem dados comerciais e por isso seguem a obrigatoriedade da verificação em duas etapas.
+export const MFA_REQUIRED_ROLES: readonly Role[] = [...STAFF_ROLES, "brand_rep"];
 
 // Ações em que quem propõe não pode ser quem aprova ("quatro olhos").
 export const FOUR_EYES: Partial<Record<Permission, Permission>> = {

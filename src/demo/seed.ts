@@ -6,6 +6,7 @@ import { createHash } from "node:crypto";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
+  brandMembers,
   brands,
   campaigns,
   clicks,
@@ -81,6 +82,8 @@ const PEOPLE: Person[] = [
   { email: "criadora3@exemplo.test", name: "Elis Moraes (fictícia)", username: "elis_demo", roles: ["user"], bio: "Perfil fictício · jeans e básicos" },
   { email: "criadora4@exemplo.test", name: "Fê Souza (fictícia)", username: "fe_demo", roles: ["user"], bio: "Perfil fictício · festas" },
   { email: "criadora5@exemplo.test", name: "Gabi Nunes (fictícia)", username: "gabi_demo", roles: ["user"], bio: "Perfil fictício · recém-chegada" },
+  // Representante da marca fictícia: só o portal da marca (sem perfil de criadora).
+  { email: "marca@exemplo.test", name: "Mara da Marca (fictícia)", username: "mara_marca", roles: ["brand_rep"] },
 ];
 
 const LOOKS: Record<string, [string, string, string[]][]> = {
@@ -137,6 +140,7 @@ export async function seedDemo({ password, log = console.info, now = new Date() 
       .returning();
     await db.insert(productFeeds).values({ brandId: brand.id, source: "file:feed-ficticio.xml" });
   }
+  await db.insert(brandMembers).values({ brandId: brand.id, userId: people.mara_marca.id, grantedBy: ana.id }).onConflictDoNothing();
   let [campaign] = await db.select().from(campaigns).where(eq(campaigns.brandId, brand.id));
   if (!campaign) {
     [campaign] = await db.insert(campaigns).values({ brandId: brand.id, name: "Campanha fictícia de lançamento", slug: "lancamento-ficticio", status: "active", startsAt: new Date(now.getTime() - 200 * DAY) }).returning();
@@ -272,5 +276,5 @@ export async function seedDemo({ password, log = console.info, now = new Date() 
   const rec = await runReconciliation(now);
   log("Conciliação:", rec);
   await db.insert(settings).values({ key: DEMO_FLAG, value: now.toISOString() });
-  log("Demonstração pronta. Contas: admin@exemplo.test, admin2@exemplo.test, operadora@exemplo.test, criadora1..5@exemplo.test (senha do .env.local).");
+  log("Demonstração pronta. Contas: admin@exemplo.test, admin2@exemplo.test, operadora@exemplo.test, criadora1..5@exemplo.test, marca@exemplo.test (portal da marca) (senha do .env.local).");
 }

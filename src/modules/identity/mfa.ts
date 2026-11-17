@@ -5,7 +5,7 @@ import { hmac } from "@/lib/crypto";
 import { staffMfaRequired } from "@/lib/env";
 import { decryptPii, encryptPii } from "@/lib/pii";
 import { site } from "@/config/site";
-import { assertCan, isStaff, type Principal } from "@/modules/access/can";
+import { assertCan, homeFor, isStaff, requiresMfa, type Principal } from "@/modules/access/can";
 import type { Role } from "@/modules/access/permissions";
 import { recordAudit } from "@/modules/audit/service";
 import { RATE_LIMITS } from "./policies";
@@ -138,7 +138,7 @@ export async function confirmEnrollment(userId: string, sessionId: string, code:
   return codes;
 }
 
-export type ChallengeResult = { ok: true; staff: boolean; usedRecoveryCode: boolean; expiresAt: Date } | { ok: false; error: "invalid" | "rate_limited" };
+export type ChallengeResult = { ok: true; staff: boolean; home: string; usedRecoveryCode: boolean; expiresAt: Date } | { ok: false; error: "invalid" | "rate_limited" };
 
 // Segunda etapa do login: valida o código do app (ou um código de recuperação) para a sessão pendente.
 export async function verifyChallenge(userId: string, sessionId: string, code: string, ipHash?: string | null): Promise<ChallengeResult> {
@@ -166,7 +166,7 @@ export async function verifyChallenge(userId: string, sessionId: string, code: s
   const staff = isStaff(roles);
   if (usedRecoveryCode) await recordAudit({ actorId: userId, actorRoles: roles, action: "mfa.recovery_code_used", entityType: "user", entityId: userId, ipHash });
   if (staff) await recordAudit({ actorId: userId, actorRoles: roles, action: "staff.login", entityType: "session", ipHash });
-  return { ok: true, staff, usedRecoveryCode, expiresAt };
+  return { ok: true, staff, home: homeFor(roles), usedRecoveryCode, expiresAt };
 }
 
 // Ações sobre um segundo fator ativo exigem um código válido no momento (não basta a sessão).
@@ -189,7 +189,7 @@ export async function regenerateRecoveryCodes(userId: string, code: string, ipHa
 
 export async function disableMfa(userId: string, code: string, ipHash?: string | null): Promise<void> {
   const roles = await rolesOf(userId);
-  if (isStaff(roles) && staffMfaRequired()) throw new MfaError("Contas da equipe precisam manter a verificação em duas etapas.");
+  if (requiresMfa(roles) && staffMfaRequired()) throw new MfaError("Contas da equipe e de marcas parceiras precisam manter a verificação em duas etapas.");
   await requireCurrentCode(userId, code);
   await db.transaction(async (tx) => {
     await tx.delete(mfaRecoveryCodes).where(eq(mfaRecoveryCodes.userId, userId));

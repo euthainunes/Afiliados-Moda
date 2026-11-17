@@ -36,7 +36,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Áreas autenticadas: sem cookie, vai direto ao login (a validação real da sessão é feita no servidor).
-  const protectedArea = ["/app", "/admin"].some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const protectedArea = ["/app", "/admin", "/marca"].some((p) => pathname === p || pathname.startsWith(`${p}/`));
   if (protectedArea && !request.cookies.has(COOKIE)) {
     const url = new URL("/entrar", request.url);
     url.searchParams.set("next", pathname);

@@ -5,7 +5,7 @@ import { hmac, randomToken, sha256 } from "@/lib/crypto";
 import { env } from "@/lib/env";
 import { sendMail } from "@/lib/mailer";
 import { recordAudit } from "@/modules/audit/service";
-import { isStaff } from "@/modules/access/can";
+import { homeFor, isStaff } from "@/modules/access/can";
 import { getDummyHash, hashPassword, verifyPassword } from "./password";
 import { isMfaEnabled } from "./mfa";
 import { LEGAL_VERSIONS, RATE_LIMITS, TOKEN_TTL } from "./policies";
@@ -173,7 +173,7 @@ export async function resendVerification(email: string, ctx: RequestContext = {}
 }
 
 export type LoginResult =
-  | { ok: true; token: string; expiresAt: Date; staff: boolean; mfaRequired: boolean }
+  | { ok: true; token: string; expiresAt: Date; staff: boolean; mfaRequired: boolean; home: string }
   | { ok: false; error: "invalid" | "rate_limited" | "unverified" | "suspended"; retryAfterSec?: number };
 
 export async function login(email: string, password: string, ctx: RequestContext = {}): Promise<LoginResult> {
@@ -212,7 +212,7 @@ export async function openSession(userId: string, ctx: RequestContext = {}) {
   if (staff && !mfaRequired) {
     await recordAudit({ actorId: userId, actorRoles: roles, action: "staff.login", entityType: "session", ipHash: ctx.ipHash });
   }
-  return { token, expiresAt, staff, mfaRequired };
+  return { token, expiresAt, staff, mfaRequired, home: homeFor(roles) };
 }
 
 // Resposta sempre genérica: não informa se o e-mail tem conta.
