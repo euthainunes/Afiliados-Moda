@@ -109,3 +109,14 @@ export async function deleteMyAccount(userId: string, password: string, confirma
     await recordAudit({ actorId: userId, action: "privacy.account_deleted", entityType: "user", entityId: userId }, tx);
   });
 }
+
+// Preferência de avisos por e-mail. Avisos que ainda estão na fila também deixam de ser enviados.
+export async function setEmailNotifications(userId: string, enabled: boolean): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.update(profiles).set({ emailNotifications: enabled }).where(eq(profiles.userId, userId));
+    if (!enabled) {
+      await tx.update(notifications).set({ emailStatus: "skipped" }).where(and(eq(notifications.userId, userId), eq(notifications.emailStatus, "pending")));
+    }
+    await recordAudit({ actorId: userId, action: "privacy.email_notifications", entityType: "user", entityId: userId, after: { enabled } }, tx);
+  });
+}

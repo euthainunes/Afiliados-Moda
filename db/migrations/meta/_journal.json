@@ -64,6 +64,20 @@
       "when": 1791969885180,
       "tag": "0008_social_login",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794947721332,
+      "tag": "0009_notification_emails",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794947767110,
+      "tag": "0010_notification_email_claim",
+      "breakpoints": true
     }
   ]
 }

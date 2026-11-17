@@ -1,7 +1,10 @@
-import { boolean, index, jsonb, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { users } from "./identity";
 
 const ts = (name: string) => timestamp(name, { withTimezone: true });
+
+// pending: aguardando envio · sending: em envio · sent: enviado · skipped: não vai por e-mail · failed: desistiu após tentativas
+export const notificationEmailStatus = pgEnum("notification_email_status", ["pending", "sending", "sent", "skipped", "failed"]);
 
 export const notifications = pgTable(
   "notifications",
@@ -18,9 +21,15 @@ export const notifications = pgTable(
     dedupeKey: text("dedupe_key").notNull().unique(),
     readAt: ts("read_at"),
     isDemo: boolean("is_demo").notNull().default(false),
+    // Fila de e-mail (envio fora da transação que criou o aviso; ver notifications/email.ts).
+    emailStatus: notificationEmailStatus("email_status").notNull().default("pending"),
+    emailAttempts: integer("email_attempts").notNull().default(0),
+    // Quando o envio foi reservado; reservas antigas (processo interrompido) voltam para a fila.
+    emailClaimedAt: ts("email_claimed_at"),
+    emailedAt: ts("emailed_at"),
     createdAt: ts("created_at").notNull().defaultNow(),
   },
-  (t) => [index("notifications_user_idx").on(t.userId, t.createdAt)],
+  (t) => [index("notifications_user_idx").on(t.userId, t.createdAt), index("notifications_email_queue_idx").on(t.emailStatus, t.createdAt)],
 );
 
 export const ticketStatus = pgEnum("ticket_status", ["open", "answered", "closed"]);

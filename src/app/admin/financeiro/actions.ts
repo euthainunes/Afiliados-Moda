@@ -17,6 +17,7 @@ import {
   runEligibility,
   runReconciliation,
 } from "@/modules/finance/operations";
+import { scheduleNotificationEmails } from "@/modules/notifications/schedule";
 import { reprocessOrder } from "@/modules/orders/sync";
 import type { Permission } from "@/modules/access/permissions";
 
@@ -42,6 +43,8 @@ async function run(permission: Permission, paths: string[], fn: (actor: ReturnTy
     throw error;
   }
   for (const p of paths) revalidatePath(p);
+  // Ações financeiras costumam gerar avisos (resgate pago, recompensa liberada…): envia os e-mails em seguida.
+  scheduleNotificationEmails();
   return { status: "success", message: message || "Feito." };
 }
 

@@ -7,7 +7,7 @@ import type { FormState } from "@/lib/form-state";
 import { changePassword } from "@/modules/identity/service";
 import { revokeAllSessions, revokeSession } from "@/modules/identity/sessions";
 import { changePasswordSchema, fieldErrors } from "@/modules/identity/validation";
-import { deleteMyAccount, PrivacyError, updateProfile } from "@/modules/privacy/service";
+import { deleteMyAccount, PrivacyError, setEmailNotifications, updateProfile } from "@/modules/privacy/service";
 import { ZodError } from "zod";
 
 export async function changePasswordAction(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -62,4 +62,12 @@ export async function deleteAccountAction(_prev: FormState, formData: FormData):
   }
   await clearSessionCookie();
   redirect("/?conta=excluida");
+}
+
+export async function updateEmailPreferenceAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await requireSession();
+  const enabled = formData.get("emailNotifications") === "on";
+  await setEmailNotifications(session.user.id, enabled);
+  revalidatePath("/app/configuracoes");
+  return { status: "success", message: enabled ? "Você vai receber os avisos importantes por e-mail." : "Os avisos ficam só aqui na plataforma, sem e-mail." };
 }

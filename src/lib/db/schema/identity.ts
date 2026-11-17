@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   bigint,
+  boolean,
   customType,
   integer,
   index,
@@ -44,6 +45,8 @@ export const profiles = pgTable(
     username: text("username").notNull(),
     avatarUrl: text("avatar_url"),
     bio: text("bio"),
+    // Preferência da titular: receber por e-mail os avisos importantes (vendas, recompensas, resgates, suporte).
+    emailNotifications: boolean("email_notifications").notNull().default(true),
     ...timestamps,
   },
   (t) => [uniqueIndex("profiles_username_lower_idx").on(sql`lower(${t.username})`)],

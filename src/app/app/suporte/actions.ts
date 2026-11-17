@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { scheduleNotificationEmails } from "@/modules/notifications/schedule";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession, toPrincipal } from "@/lib/auth/current";
@@ -35,6 +36,8 @@ export async function replyTicketAction(_prev: FormState, fd: FormData): Promise
   }
   revalidatePath(`/app/suporte/${ticketId}`);
   revalidatePath(`/admin/suporte/${ticketId}`);
+  // Resposta da equipe gera aviso para a usuária.
+  scheduleNotificationEmails();
   return { status: "success", message: "Mensagem enviada." };
 }
 

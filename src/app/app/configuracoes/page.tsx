@@ -7,7 +7,7 @@ import { requireSession } from "@/lib/auth/current";
 import { listActiveSessions } from "@/modules/identity/sessions";
 import { revokeOtherSessionsAction, revokeSessionAction } from "./actions";
 import { ChangePasswordForm } from "./change-password-form";
-import { DeleteAccountForm, ProfileForm } from "./privacy-forms";
+import { DeleteAccountForm, EmailPreferenceForm, ProfileForm } from "./privacy-forms";
 import { db } from "@/lib/db";
 import { profiles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -52,6 +52,12 @@ export default async function SettingsPage() {
         <Card aria-labelledby="senha">
           <h2 id="senha" className="mb-4 text-lg font-semibold">Alterar senha</h2>
           <ChangePasswordForm />
+        </Card>
+
+        <Card aria-labelledby="avisos-email">
+          <h2 id="avisos-email" className="mb-1 text-lg font-semibold">Avisos por e-mail</h2>
+          <p className="mb-4 text-sm text-muted">Os avisos sempre aparecem no sino da plataforma. Por e-mail, várias novidades do mesmo momento chegam juntas numa única mensagem.</p>
+          <EmailPreferenceForm enabled={profile.emailNotifications} />
         </Card>
 
         <Card aria-labelledby="seguranca">

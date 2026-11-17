@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requirePermission, toPrincipal } from "@/lib/auth/current";
+import { scheduleNotificationEmails } from "@/modules/notifications/schedule";
 import type { FormState } from "@/lib/form-state";
 import { createOrderIntegration, IntegrationAdminError, setIntegrationMode, triggerSync } from "@/modules/integrations/admin";
 
@@ -45,6 +46,7 @@ export async function syncNowAction(_p: FormState, fd: FormData) {
   const session = await requirePermission("events.reprocess");
   return handle(async () => {
     const r = await triggerSync(toPrincipal(session), String(fd.get("integrationId") ?? ""));
+    scheduleNotificationEmails();
     const c = r.counters;
     return `Sincronização ${r.status === "succeeded" ? "concluída" : r.status === "partial" ? "parcial" : "falhou"}: ${c.received} recebidos, ${c.created} novos, ${c.updated} atualizados, ${c.unchanged} sem mudança, ${c.failed} com erro.${r.error ? ` ${r.error}` : ""}`;
   });
