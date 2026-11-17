@@ -200,9 +200,9 @@ export async function login(email: string, password: string, ctx: RequestContext
 
 // Abre a sessão depois de a identidade ser comprovada (senha ou provedor externo).
 // Com segundo fator ativo, a sessão nasce pendente e só vale depois do código do app (mfa.ts).
-export async function openSession(userId: string, ctx: RequestContext = {}) {
-  const mfaRequired = await isMfaEnabled(userId);
-  const { token, expiresAt } = await createSession(userId, ctx, { pendingMfa: mfaRequired });
+export async function openSession(userId: string, ctx: RequestContext = {}, { secondFactorVerified = false } = {}) {
+  const mfaRequired = !secondFactorVerified && (await isMfaEnabled(userId));
+  const { token, expiresAt } = await createSession(userId, ctx, { pendingMfa: mfaRequired, mfaVerified: secondFactorVerified });
   await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, userId));
 
   const roles = (await db.select({ role: userRoles.role }).from(userRoles).where(eq(userRoles.userId, userId))).map(

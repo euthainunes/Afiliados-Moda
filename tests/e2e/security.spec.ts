@@ -31,7 +31,7 @@ test("criadora ativa a verificação em duas etapas e passa a ser desafiada no l
   await page.goto("/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/app$/);
 
   await page.goto("/app/configuracoes");
@@ -58,7 +58,7 @@ test("criadora ativa a verificação em duas etapas e passa a ser desafiada no l
   await page.goto("/entrar?next=/app/recompensas");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/entrar\/verificacao/);
   await expect(page.getByRole("heading", { name: "Verificação em duas etapas" })).toBeVisible();
 
@@ -82,7 +82,7 @@ test("destino com tabulação após o login não leva a outro site", async ({ pa
   await page.goto("/entrar?next=/%09/malicioso.example");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/^http:\/\/localhost:\d+\/app$/);
 });
 
@@ -91,4 +91,33 @@ test("sem credenciais do Google, o botão não aparece e a rota responde 404", a
   await expect(page.getByRole("link", { name: "Continuar com Google" })).toHaveCount(0);
   expect((await request.get("/api/auth/google", { maxRedirects: 0 })).status()).toBe(404);
   expect((await request.get("/api/auth/google/callback?code=x&state=y", { maxRedirects: 0 })).status()).toBe(404);
+});
+
+test("cria chave de acesso e entra com ela, sem senha", async ({ page }) => {
+  // Autenticador virtual do Chromium: faz o papel da digital/PIN do aparelho.
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("WebAuthn.enable");
+  await cdp.send("WebAuthn.addVirtualAuthenticator", {
+    options: { protocol: "ctap2", transport: "internal", hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true },
+  });
+
+  const { email } = await seedAccount();
+  await page.goto("/entrar");
+  await page.getByLabel("E-mail", { exact: true }).first().fill(email);
+  await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
+  await expect(page).toHaveURL(/\/app$/);
+
+  await page.goto("/app/configuracoes/seguranca");
+  await page.getByLabel("Nome da chave (opcional)").fill("Notebook de teste");
+  await page.getByRole("button", { name: "Criar chave de acesso" }).click();
+  await expect(page.getByText(/Chave de acesso cadastrada/)).toBeVisible();
+  await page.reload();
+  await expect(page.getByText("Notebook de teste")).toBeVisible();
+
+  await page.getByRole("button", { name: "Sair" }).first().click();
+  await page.goto("/entrar");
+  await page.getByRole("button", { name: "Entrar com chave de acesso" }).click();
+  await expect(page).toHaveURL(/\/app$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });

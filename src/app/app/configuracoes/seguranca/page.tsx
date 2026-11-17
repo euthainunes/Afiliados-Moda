@@ -10,7 +10,11 @@ import { dateFmt } from "@/lib/dates";
 import { staffMfaRequired } from "@/lib/env";
 import { requiresMfa } from "@/modules/access/can";
 import { getMfaStatus } from "@/modules/identity/mfa";
-import { cancelEnrollmentAction, startEnrollmentAction } from "./actions";
+import { listPasskeys } from "@/modules/identity/passkeys";
+import { ActionForm } from "@/components/ui/action-form";
+import { SubmitButton } from "@/components/ui/submit-button";
+import { cancelEnrollmentAction, removePasskeyAction, startEnrollmentAction } from "./actions";
+import { AddPasskey } from "./passkeys";
 import { ConfirmEnrollmentForm, DisableMfaForm, RegenerateCodesForm } from "./forms";
 
 export const metadata: Metadata = { title: "Segurança da conta" };
@@ -23,7 +27,7 @@ function groupSecret(secret: string) {
 export default async function SecurityPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const params = await searchParams;
   const session = await requireSession("/app/configuracoes/seguranca");
-  const status = await getMfaStatus(session.user.id);
+  const [status, keys] = await Promise.all([getMfaStatus(session.user.id), listPasskeys(session.user.id)]);
   // Papéis efetivos podem estar suspensos (sem MFA); a exigência vale para quem é da equipe de fato.
   const staffLocked = (session.mfa.enrollmentRequired || requiresMfa(session.roles)) && staffMfaRequired();
   const qr = status.state === "enrolling" ? await QRCode.toDataURL(status.uri, { margin: 1, width: 220 }) : null;
@@ -34,7 +38,7 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
       <div className="flex flex-col gap-6">
         {session.mfa.enrollmentRequired && (
           <Alert tone="warning" title="Ative a verificação em duas etapas para continuar">
-            Contas da equipe e de marcas parceiras precisam do segundo fator. Enquanto ele não estiver ativo, o painel interno e o portal da marca ficam bloqueados para esta conta.
+            Contas da equipe e de marcas parceiras precisam do segundo fator. Ative o app autenticador abaixo ou crie uma chave de acesso (e passe a entrar com ela). Até lá, o painel interno e o portal da marca ficam bloqueados para esta conta.
           </Alert>
         )}
         {params.aviso === "codigo-usado" && (
@@ -103,6 +107,32 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
               </section>
             </div>
           )}
+        </Card>
+
+        <Card aria-labelledby="chaves">
+          <h2 id="chaves" className="text-lg font-semibold">Chaves de acesso</h2>
+          <p className="mb-4 mt-1 text-sm text-muted">
+            Entre com a digital, o rosto ou o PIN do aparelho, sem digitar senha nem código. A chave fica guardada no aparelho (ou no gerenciador de senhas dele) e não pode ser usada em sites falsos. Entrar com chave já conta como verificação em duas etapas.
+          </p>
+          {keys.length > 0 && (
+            <ul className="mb-5 divide-y divide-line">
+              {keys.map((k) => (
+                <li key={k.id} className="flex flex-wrap items-center justify-between gap-3 py-3 text-sm">
+                  <div>
+                    <p className="font-medium">{k.name}</p>
+                    <p className="text-muted">
+                      Criada em {dateFmt.format(k.createdAt)} · {k.lastUsedAt ? `último uso ${dateFmt.format(k.lastUsedAt)}` : "ainda não usada"}
+                      {k.backedUp ? " · sincronizada entre aparelhos" : ""}
+                    </p>
+                  </div>
+                  <ActionForm action={removePasskeyAction} hidden={{ passkeyId: k.id }}>
+                    <SubmitButton size="sm" variant="ghost" pendingLabel="Removendo…" className="self-start">Remover</SubmitButton>
+                  </ActionForm>
+                </li>
+              ))}
+            </ul>
+          )}
+          <AddPasskey />
         </Card>
 
         <p className="text-sm">

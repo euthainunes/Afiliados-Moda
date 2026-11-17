@@ -159,3 +159,33 @@ export const userIdentities = pgTable(
   },
   (t) => [uniqueIndex("user_identities_provider_subject_idx").on(t.provider, t.subject), uniqueIndex("user_identities_user_provider_idx").on(t.userId, t.provider)],
 );
+
+// Chaves de acesso (WebAuthn/passkeys). Só a chave PÚBLICA fica aqui; a privada nunca sai do aparelho.
+export const passkeys = pgTable(
+  "passkeys",
+  {
+    // ID da credencial (base64url), definido pelo autenticador.
+    id: text("id").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    publicKey: text("public_key").notNull(),
+    counter: bigint("counter", { mode: "number" }).notNull().default(0),
+    transports: text("transports").array().notNull().default(sql`'{}'::text[]`),
+    deviceType: text("device_type").notNull(),
+    backedUp: boolean("backed_up").notNull().default(false),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
+  },
+  (t) => [index("passkeys_user_idx").on(t.userId)],
+);
+
+// Desafios WebAuthn de uso único (5 min). O navegador guarda só o id, num cookie HttpOnly.
+export const webauthnChallenges = pgTable("webauthn_challenges", {
+  id: text("id").primaryKey(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  purpose: text("purpose").notNull(),
+  challenge: text("challenge").notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+});

@@ -16,7 +16,7 @@ test("capturas", async ({ page }, info) => {
   await page.goto("/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await page.waitForURL(/\/admin$/);
   await page.screenshot({ path: `${dir}/admin.png`, fullPage: true });
   await page.goto("/admin/usuarias");
@@ -53,7 +53,7 @@ test("capturas da demonstração financeira", async ({ page }, info) => {
     await page.goto("/entrar");
     await page.getByLabel("E-mail", { exact: true }).first().fill(email);
     await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-    await page.getByRole("button", { name: "Entrar" }).click();
+    await page.getByRole("button", { name: "Entrar", exact: true }).click();
     await page.waitForURL(/\/(app|admin)$/);
   };
   await login("criadora2@exemplo.test");

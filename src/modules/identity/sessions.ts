@@ -29,7 +29,7 @@ async function rolesOf(userId: string): Promise<Role[]> {
   return rows.map((r) => r.role);
 }
 
-export async function createSession(userId: string, ctx: SessionContext = {}, { pendingMfa = false } = {}) {
+export async function createSession(userId: string, ctx: SessionContext = {}, { pendingMfa = false, mfaVerified = false } = {}) {
   const roles = await rolesOf(userId);
   const policy = isStaff(roles) ? SESSION_POLICY.staff : SESSION_POLICY.user;
   const token = randomToken();
@@ -43,6 +43,8 @@ export async function createSession(userId: string, ctx: SessionContext = {}, { 
     absoluteExpiresAt: new Date(now + policy.absoluteMs),
     ipHash: ctx.ipHash ?? null,
     userAgent: ctx.userAgent?.slice(0, 300) ?? null,
+    // Sessão aberta com chave de acesso: o segundo fator já foi comprovado no aparelho.
+    mfaVerifiedAt: mfaVerified ? new Date(now) : null,
   });
   return { token, expiresAt };
 }
@@ -75,7 +77,8 @@ export async function validateSessionToken(token: string, { allowPending = false
   if (pending && !allowPending) return null;
 
   const assignedRoles = await rolesOf(row.user.id);
-  const enrollmentRequired = !mfaEnabled && requiresMfa(assignedRoles) && staffMfaRequired();
+  // Satisfeita por app autenticador ativo ou por sessão já verificada (ex.: aberta com chave de acesso).
+  const enrollmentRequired = !mfaEnabled && !mfaVerified && requiresMfa(assignedRoles) && staffMfaRequired();
   const roles = pending || enrollmentRequired ? assignedRoles.filter((r) => !MFA_REQUIRED_ROLES.includes(r)) : assignedRoles;
   let expiresAt = row.session.expiresAt;
 

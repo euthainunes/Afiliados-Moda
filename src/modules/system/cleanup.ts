@@ -1,6 +1,6 @@
 import { and, eq, isNotNull, isNull, lt, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { authTokens, rateLimitBuckets, sessions, supportTickets, userMfa } from "@/lib/db/schema";
+import { authTokens, rateLimitBuckets, sessions, supportTickets, userMfa, webauthnChallenges } from "@/lib/db/schema";
 import { getSetting } from "@/modules/settings/service";
 
 const DAY = 24 * 3600_000;
@@ -22,6 +22,7 @@ export type CleanupResult = {
   authTokens: number;
   rateLimitBuckets: number;
   mfaEnrollments: number;
+  webauthnChallenges: number;
   contactsAnonymized: number;
 };
 
@@ -50,6 +51,8 @@ export async function runCleanup(now = new Date()): Promise<CleanupResult> {
     .where(and(isNull(userMfa.enabledAt), lt(userMfa.createdAt, ago(RETENTION.mfaEnrollmentHours * 3600_000))))
     .returning({ userId: userMfa.userId });
 
+  const removedChallenges = await db.delete(webauthnChallenges).where(lt(webauthnChallenges.expiresAt, now)).returning({ id: webauthnChallenges.id });
+
   // Contatos do formulário público (sem conta): o histórico da conversa fica, nome e e-mail saem.
   const anonymized = await db
     .update(supportTickets)
@@ -69,6 +72,7 @@ export async function runCleanup(now = new Date()): Promise<CleanupResult> {
     authTokens: removedTokens.length,
     rateLimitBuckets: removedBuckets.length,
     mfaEnrollments: removedEnrollments.length,
+    webauthnChallenges: removedChallenges.length,
     contactsAnonymized: anonymized.length,
   };
 }

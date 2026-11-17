@@ -1,6 +1,10 @@
 "use server";
 
+import type { RegistrationResponseJSON } from "@simplewebauthn/server";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { WEBAUTHN_COOKIE, webauthnCookieOptions } from "@/lib/auth/oauth-cookies";
+import { finishPasskeyRegistration, PasskeyError, removePasskey, startPasskeyRegistration } from "@/modules/identity/passkeys";
 import { requestContext, requireSession } from "@/lib/auth/current";
 import type { FormState } from "@/lib/form-state";
 import { cancelEnrollment, confirmEnrollment, disableMfa, MfaError, regenerateRecoveryCodes, startEnrollment } from "@/modules/identity/mfa";
@@ -63,4 +67,45 @@ export async function disableMfaAction(_prev: FormState, formData: FormData): Pr
   });
   if (result.status === "success") revalidatePath(PATH);
   return result;
+}
+
+export async function passkeyRegisterOptionsAction(): Promise<{ ok: true; options: Awaited<ReturnType<typeof startPasskeyRegistration>>["options"] } | { ok: false; message: string }> {
+  const session = await requireSession(PATH);
+  try {
+    const { options, challengeId } = await startPasskeyRegistration(session.user.id);
+    (await cookies()).set(WEBAUTHN_COOKIE, challengeId, webauthnCookieOptions);
+    return { ok: true, options };
+  } catch (error) {
+    if (error instanceof PasskeyError) return { ok: false, message: error.message };
+    throw error;
+  }
+}
+
+export async function passkeyRegisterAction(response: RegistrationResponseJSON, name: string): Promise<{ ok: boolean; message: string }> {
+  const session = await requireSession(PATH);
+  const jar = await cookies();
+  const challengeId = jar.get(WEBAUTHN_COOKIE)?.value ?? "";
+  jar.delete(WEBAUTHN_COOKIE);
+  const { ipHash } = await requestContext();
+  try {
+    await finishPasskeyRegistration(session.user.id, session.sessionId, challengeId, response, String(name ?? ""), ipHash);
+  } catch (error) {
+    if (error instanceof PasskeyError) return { ok: false, message: error.message };
+    throw error;
+  }
+  revalidatePath(PATH);
+  return { ok: true, message: "Chave de acesso cadastrada. Na próxima vez, use \"Entrar com chave de acesso\"." };
+}
+
+export async function removePasskeyAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const session = await requireSession(PATH);
+  const { ipHash } = await requestContext();
+  try {
+    await removePasskey(session.user.id, String(formData.get("passkeyId") ?? ""), ipHash);
+  } catch (error) {
+    if (error instanceof PasskeyError) return { status: "error", message: error.message };
+    throw error;
+  }
+  revalidatePath(PATH);
+  return { status: "success", message: "Chave removida." };
 }

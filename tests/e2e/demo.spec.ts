@@ -7,7 +7,7 @@ async function loginAs(page: Page, email: string) {
   await page.goto("/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await page.waitForURL(/\/(app|admin)$/);
 }
 
@@ -122,7 +122,7 @@ test("marca parceira vê o próprio portal, somente leitura, e nada além dele",
   await page.goto("/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill("marca@exemplo.test");
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/marca\/marca-ficticia$/);
   await expect(page.getByRole("heading", { level: 1, name: "Marca Fictícia" })).toBeVisible();
   await expect(page.getByText("Vendas atribuídas", { exact: true }).first()).toBeVisible();

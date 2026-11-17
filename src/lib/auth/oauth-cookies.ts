@@ -17,3 +17,7 @@ export async function clearGooglePending(): Promise<void> {
 
 export const oauthCookieOptions = { httpOnly: true, secure, sameSite: "lax" as const, path: "/api/auth/google", maxAge: 600 };
 export const pendingCookieOptions = { httpOnly: true, secure, sameSite: "lax" as const, path: "/", maxAge: 900 };
+
+// Id do desafio WebAuthn em andamento (5 min). O desafio em si fica no banco.
+export const WEBAUTHN_COOKIE = secure ? "__Host-am_webauthn" : "am_webauthn";
+export const webauthnCookieOptions = { httpOnly: true, secure, sameSite: "strict" as const, path: "/", maxAge: 300 };

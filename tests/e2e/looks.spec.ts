@@ -9,7 +9,7 @@ async function loginAs(page: Page, email: string) {
   await page.goto("/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await page.waitForURL(/\/(app|admin)$/);
 }
 

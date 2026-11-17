@@ -4,6 +4,7 @@ import { Alert } from "@/components/ui/alert";
 import { safeNext } from "@/lib/auth/current";
 import { redirectIfAuthenticated } from "../actions";
 import { GoogleButton } from "@/components/google-button";
+import { PasskeyLogin } from "@/components/passkey-login";
 import { LoginForm, ResendVerificationForm } from "./login-form";
 
 const GOOGLE_MESSAGES: Record<string, string> = {
@@ -40,6 +41,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <Alert tone="danger">{GOOGLE_MESSAGES[params.google]}</Alert>
         </div>
       )}
+      <div className="mb-5 flex flex-col gap-3">
+        <PasskeyLogin next={next} />
+      </div>
       <GoogleButton next={next} />
       <LoginForm next={next} />
       <ResendVerificationForm />

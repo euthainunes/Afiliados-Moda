@@ -5,7 +5,7 @@ async function loginAs(page: import("@playwright/test").Page, email: string, nex
   await page.goto(next ? `/entrar?next=${encodeURIComponent(next)}` : "/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
 }
 
 test("página inicial apresenta a proposta e leva ao cadastro", async ({ page }) => {
@@ -36,7 +36,7 @@ test("área logada exige login e preserva o destino", async ({ page }) => {
   await expect(page).toHaveURL(/\/entrar\?next=%2Fapp%2Fconfiguracoes/);
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(PASSWORD);
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page).toHaveURL(/\/app\/configuracoes$/);
   await expect(page.getByText("Esta sessão")).toBeVisible();
 });
@@ -46,7 +46,7 @@ test("senha errada mostra mensagem genérica", async ({ page }) => {
   await page.goto("/entrar");
   await page.getByLabel("E-mail", { exact: true }).first().fill(email);
   await page.getByLabel("Senha", { exact: true }).fill("senha-errada-123");
-  await page.getByRole("button", { name: "Entrar" }).click();
+  await page.getByRole("button", { name: "Entrar", exact: true }).click();
   await expect(page.getByText("E-mail ou senha incorretos.")).toBeVisible();
 });
 
