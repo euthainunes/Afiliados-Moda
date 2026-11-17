@@ -127,6 +127,13 @@ paths:
       responses:
         "302": { description: "Para /app, /admin, /entrar/verificacao, /cadastro/google ou /entrar?google=<motivo>" }
         "404": { description: Login com Google não configurado }
+  /api/cron/enviar-avisos:
+    get:
+      summary: Envia os avisos por e-mail pendentes, agrupados por pessoa (a cada 15 min)
+      security: [{ cron: [] }]
+      responses:
+        "200": { description: "Contagens {emails, notifications, skipped, failed}" }
+        "401": { description: Não autorizado }
   /api/cron/limpeza:
     get:
       summary: Rotina diária de retenção (sessões, links de e-mail, limites de tentativa, contatos antigos)

@@ -13,7 +13,7 @@ pnpm db:migrate                 # cria as tabelas
 pnpm db:seed                    # carrega a DEMONSTRAÇÃO (fictícia); recriar tudo: pnpm db:reset
 pnpm dev                        # http://localhost:3000 (links de e-mail aparecem no terminal)
 ```
-Contas fictícias (senha = `SEED_PASSWORD`): `admin@exemplo.test` e `admin2@exemplo.test` (administradoras), `operadora@exemplo.test`, `criadora1@exemplo.test` … `criadora5@exemplo.test`.
+Contas fictícias (senha = `SEED_PASSWORD`): `admin@exemplo.test` e `admin2@exemplo.test` (administradoras), `operadora@exemplo.test`, `criadora1@exemplo.test` … `criadora5@exemplo.test` e `marca@exemplo.test` (portal da marca fictícia).
 
 Verificação em duas etapas: qualquer conta pode ativar em **Conta → Verificação em duas etapas**. Para a equipe ela é obrigatória quando `REQUIRE_STAFF_MFA=true` e **sempre** em produção; em desenvolvimento o padrão é não exigir, para facilitar a demonstração.
 

@@ -15,6 +15,9 @@ Especificação OpenAPI: [`docs/api/openapi.yaml`](./api/openapi.yaml). Resumo:
 | `GET /l/{slug}/opengraph-image` | público | Imagem de compartilhamento |
 | `GET /api/auth/google` | público (404 sem credenciais) | Início do login com Google (state, nonce, PKCE) |
 | `GET /api/auth/google/callback` | público (404 sem credenciais) | Volta do Google: entra, vincula ou leva a "Concluir cadastro" |
+| `GET /api/cron/enviar-avisos` | `Bearer CRON_SECRET` | Envia os avisos por e-mail pendentes (um e-mail por pessoa) |
+| `GET /marca/{marca}` · `/vendas` · `/faturas` | sessão + `brand_portal.access` + vínculo com a marca | Portal da marca, somente leitura |
+| `GET /excluir-conta?token=` | link do e-mail | Confirmação da exclusão para contas sem senha |
 | `GET /api/cron/limpeza` | `Bearer CRON_SECRET` | Rotina diária de retenção (sessões, links, limites, contatos) |
 
 ## Serviços de domínio (regras de negócio no servidor)
@@ -24,6 +27,9 @@ Toda tela chama estes serviços por Server Actions, que **relêem a sessão** e 
 |---|---|---|
 | Identidade | `modules/identity/service.ts` | cadastro, confirmação, login, recuperação/troca de senha |
 | Sessões | `modules/identity/sessions.ts` | criar/validar/revogar sessões; sessão pendente até o segundo fator |
+| Chaves de acesso | `modules/identity/passkeys.ts` | cadastro e entrada com WebAuthn; desafios de uso único |
+| Portal da marca | `modules/brand-portal/service.ts` | visão geral, vendas, faturas; conceder/remover acesso |
+| Avisos por e-mail | `modules/notifications/email.ts`, `schedule.ts` | fila, agrupamento por pessoa, novas tentativas |
 | Login social | `modules/identity/social.ts`, `src/integrations/google/oidc.ts` | login com Google, regras de vínculo, cadastro pendente assinado |
 | Duas etapas | `modules/identity/mfa.ts`, `totp.ts` | TOTP (RFC 6238), códigos de recuperação, anti-replay, obrigatoriedade da equipe, redefinição por administradora |
 | Equipe | `modules/identity/team.ts` | conceder/retirar papéis (mantém 1 admin) |
@@ -52,6 +58,9 @@ erDiagram
   users ||--o| user_mfa : "segredo TOTP criptografado"
   users ||--o{ mfa_recovery_codes : "só HMAC"
   users ||--o{ user_identities : "Google (sub)"
+  users ||--o{ passkeys : "chave pública WebAuthn"
+  brands ||--o{ brand_members : "portal da marca"
+  users ||--o{ brand_members : ""
   users ||--o{ consents : ""
   users ||--o| payout_accounts : "CPF/PIX criptografados"
   brands ||--o{ campaigns : ""

@@ -90,6 +90,7 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 | D. Painel | ✅ concluída |
 | E. Dados de demonstração coerentes | ✅ concluída (`src/demo/seed.ts`) |
 | F. Documentação | ✅ docs 12, 13, 14 e OpenAPI |
+| I. Itens sem dependência externa | ✅ concluída (ver §4.4) |
 | H. Prontidão para homologação | ✅ concluída (ver §4.3). **Pendentes externos:** credenciais do Google, ferramenta de alertas de erro, pentest externo |
 | G. Segurança (MFA, CSP) e e-mail real | ✅ concluída: verificação em duas etapas, CSP com nonce, rotina de limpeza, contrato do e-mail real testado com API simulada. **Pendentes externos:** conta do provedor de e-mail e credenciais do login com Google |
 
@@ -123,6 +124,15 @@ Detalhamento completo será publicado em `docs/12-guia-de-integracoes.md`. Resum
 **Demais entregas:** registro estruturado sem dados sensíveis + `instrumentation.ts` + telas de erro com código; `scripts/backup-restore-check.sh` (testado localmente: 43 tabelas idênticas, livro-razão balanceado); login com Google (doc 12 §7); exclusão de conta passa a apagar segundo fator e vínculos externos.
 
 **Decisões desta etapa (reversíveis):** vínculo automático com conta existente de mesmo e-mail (o Google verificou o endereço), com invalidação da senha quando a conta não tinha confirmado o e-mail; criadoras vindas do Google concluem cadastro com aceite de termos e 18+; registro de erros em JSON na hospedagem até haver ferramenta contratada.
+
+### 4.4 Etapa I — o que não dependia de terceiros
+| Item | Como | Decisões tomadas (reversíveis) |
+|---|---|---|
+| Avisos por e-mail | Fila nos próprios avisos; despachante reserva com `SKIP LOCKED`, manda **um e-mail por pessoa** com todas as novidades, tenta 3 vezes; dispara logo após as ações do painel e a cada 15 min | Vão por e-mail: venda confirmada/cancelada/recusada, recompensa liberada, resgate aprovado/recusado/pago, ajuste e resposta do suporte. "Nova venda" fica só na plataforma (frequente). Demonstração nunca gera e-mail. Pessoa pode desligar em Conta |
+| Excluir conta sem senha | Link de uso único (30 min) no e-mail + digitar EXCLUIR; a página só consome o link ao confirmar | Vale também para quem esqueceu a senha |
+| Portal da marca | `/marca/<marca>`: cliques, vendas, valor, comissão, a faturar, gráficos, peças e looks mais vendidos, vendas (nº do pedido, sem compradora) e faturas. Concessão pela administradora na tela da marca | Somente leitura; não mostra a divisão criadora × plataforma; equipe interna não pode representar marca; representante segue a mesma exigência de duas etapas da equipe |
+| Chaves de acesso (passkeys) | WebAuthn com `@simplewebauthn`; verificação da pessoa obrigatória; só a chave pública é guardada | Entrar com chave conta como verificação em duas etapas |
+| Segurança | Next.js 16.4.0 → 16.4.6 (falhas críticas corrigidas), fast-xml-parser 5.12 | `pnpm audit --prod` sem vulnerabilidades conhecidas |
 
 ## 5. Decisões confirmadas pela usuária
 Todas as recomendações abaixo foram aceitas e aplicadas.
